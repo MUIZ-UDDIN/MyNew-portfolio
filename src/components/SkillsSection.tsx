@@ -5,14 +5,25 @@ import { motion, AnimatePresence } from "framer-motion"
 import { ChevronDown } from "lucide-react"
 import { skills } from "@/data/profile"
 
-const MAX_VISIBLE = 6
+const DESKTOP_MAX = 6
+const MOBILE_MAX = 3
 
 export function SkillsSection() {
   const [expanded, setExpanded] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const entries = Object.entries(skills)
-  const visible = expanded ? entries : entries.slice(0, MAX_VISIBLE)
-  const hasMore = entries.length > MAX_VISIBLE
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
+
+  const maxVisible = isMobile ? MOBILE_MAX : DESKTOP_MAX
+  const visible = expanded ? entries : entries.slice(0, maxVisible)
+  const hasMore = entries.length > maxVisible
 
   useEffect(() => {
     if (!expanded || !ref.current) return
@@ -89,7 +100,7 @@ export function SkillsSection() {
               onClick={() => setExpanded(!expanded)}
               className="cursor-pointer inline-flex items-center gap-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-all group"
             >
-              <span>{expanded ? "Show less" : `Show ${entries.length - MAX_VISIBLE} more`}</span>
+              <span>{expanded ? "Show less" : `Show ${entries.length - maxVisible} more`}</span>
               <motion.span
                 animate={{ rotate: expanded ? 180 : 0 }}
                 transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}

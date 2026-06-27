@@ -1,3 +1,7 @@
+# Note: The production API is now at src/app/api/contact/route.ts (Next.js Route Handler).
+# This FastAPI backend is kept as an alternative for local development/testing.
+# Deploy the Next.js app to Vercel — no separate backend needed.
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel

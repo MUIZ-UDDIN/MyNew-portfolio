@@ -19,7 +19,7 @@ export function ContactSection() {
     const data = new FormData(form)
 
     try {
-      const response = await fetch("http://localhost:8000/api/contact", {
+      const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(Object.fromEntries(data)),
@@ -68,7 +68,7 @@ export function ContactSection() {
                 </div>
                 <div>
                   <p className="text-xs text-[var(--color-text-muted)]">Email</p>
-                  <p className="text-sm text-[var(--color-text)]">{email || "muiz@example.com"}</p>
+                  <p className="text-sm text-[var(--color-text)]">{email || "muizdin143@outlook.com"}</p>
                 </div>
               </div>
             </a>

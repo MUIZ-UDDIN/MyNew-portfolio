@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { ChevronDown } from "lucide-react"
 import { GithubIcon } from "@/lib/icons"
 import { projects } from "@/data/projects"
 
@@ -9,8 +10,20 @@ const categories = ["All", ...Array.from(new Set(projects.map((p) => p.category)
 
 export function ProjectsSection() {
   const [active, setActive] = useState("All")
+  const [expanded, setExpanded] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
 
   const filtered = active === "All" ? projects : projects.filter((p) => p.category === active)
+  const maxVisible = isMobile ? 3 : filtered.length
+  const visible = expanded ? filtered : filtered.slice(0, maxVisible)
+  const hasMore = filtered.length > maxVisible
 
   return (
     <section id="projects" className="relative py-24">
@@ -33,7 +46,7 @@ export function ProjectsSection() {
           {categories.map((cat) => (
             <button
               key={cat}
-              onClick={() => setActive(cat)}
+              onClick={() => { setActive(cat); setExpanded(false) }}
               className={`px-4 py-2 text-sm rounded-full transition-all duration-300 ${
                 active === cat
                   ? "bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-medium scale-105"
@@ -47,14 +60,14 @@ export function ProjectsSection() {
 
         <AnimatePresence mode="popLayout">
           <motion.div
-            key={active}
+            key={`${active}-${expanded ? "all" : maxVisible}`}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            {filtered.map((project, i) => (
+            {visible.map((project, i) => (
               <motion.div
                 key={project.title}
                 initial={{ opacity: 0, y: 20 }}
@@ -109,6 +122,28 @@ export function ProjectsSection() {
             ))}
           </motion.div>
         </AnimatePresence>
+
+        {hasMore && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            className="text-center mt-8"
+          >
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="cursor-pointer inline-flex items-center gap-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-all group"
+            >
+              <span>{expanded ? "Show less" : `Show ${filtered.length - maxVisible} more`}</span>
+              <motion.span
+                animate={{ rotate: expanded ? 180 : 0 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <ChevronDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
+              </motion.span>
+            </button>
+          </motion.div>
+        )}
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
