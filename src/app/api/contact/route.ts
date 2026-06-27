@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 
     await resend.emails.send({
       from: "onboarding@resend.dev",
-      to: "mueezgamings@gmail.com",
+      to: "muizdin143@outlook.com",
       replyTo: email,
       subject: `[Portfolio] ${subject}`,
       html: `<p><strong>Name:</strong> ${escape(name)}</p><p><strong>Email:</strong> ${escape(email)}</p><p><strong>Subject:</strong> ${escape(subject)}</p><p><strong>Message:</strong> ${escape(message)}</p>`,

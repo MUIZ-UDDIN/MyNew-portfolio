@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Inter, JetBrains_Mono } from "next/font/google"
+import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { ThemeProvider } from "@/lib/ThemeContext"
 import { Header } from "@/components/Header"
@@ -121,6 +122,7 @@ export default function RootLayout({
           <CursorGlow />
           <Header />
           <main className="flex-1 relative z-10">{children}</main>
+          <Analytics />
           <Footer />
         </ThemeProvider>
       </body>

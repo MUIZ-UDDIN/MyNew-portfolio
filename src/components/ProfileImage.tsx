@@ -85,6 +85,7 @@ export function ProfileImage() {
                 style={{ objectPosition: 'center 35%' }}
                 onError={() => setImgError(true)}
                 priority
+                quality={100}
                 sizes="(max-width: 640px) 192px, (max-width: 1024px) 224px, 256px"
               />
             </div>
