@@ -23,7 +23,7 @@ export function Footer() {
                 <a
                   key={link}
                   href={`#${link.toLowerCase()}`}
-                  className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors"
+                  className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:translate-x-1 transition-all duration-300"
                 >
                   {link}
                 </a>
@@ -38,7 +38,7 @@ export function Footer() {
                 href="https://github.com/MUIZ-UDDIN"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors"
+                className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:translate-x-1 transition-all duration-300"
               >
                 <GithubIcon className="w-4 h-4" />
                 GitHub
@@ -47,7 +47,7 @@ export function Footer() {
                 href="https://www.upwork.com/freelancers/~muizuddin"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors"
+                className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:translate-x-1 transition-all duration-300"
               >
                 <UpworkIcon className="w-4 h-4" />
                 Upwork

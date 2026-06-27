@@ -37,7 +37,7 @@ export function ProjectsSection() {
               className={`px-4 py-2 text-sm rounded-full transition-all duration-300 ${
                 active === cat
                   ? "bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-medium scale-105"
-                  : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-card)] border border-[var(--color-border)]"
+                  : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-card)] hover:border-purple-500/30 hover:scale-105 border border-[var(--color-border)]"
               }`}
             >
               {cat}
@@ -121,9 +121,9 @@ export function ProjectsSection() {
             href="https://github.com/MUIZ-UDDIN"
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex items-center gap-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-all"
+            className="group inline-flex items-center gap-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:-translate-y-0.5 transition-all duration-300"
           >
-            <GithubIcon className="w-4 h-4 transition-transform group-hover:scale-110 group-hover:-translate-y-0.5" />
+            <GithubIcon className="w-4 h-4 transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-0.5 group-hover:rotate-[-8deg]" />
             <span className="relative">
               View all on GitHub
               <span className="absolute -bottom-px left-0 w-0 h-px bg-gradient-to-r from-purple-500 to-cyan-400 transition-all duration-300 group-hover:w-full" />

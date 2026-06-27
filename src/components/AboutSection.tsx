@@ -53,7 +53,7 @@ export function AboutSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: false, margin: "-50px" }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="glass rounded-2xl p-6 glass-hover tilt-card"
+              className="glass rounded-2xl p-6 glass-hover tilt-card hover:scale-[1.02]"
             >
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-cyan-500/20 flex items-center justify-center shrink-0">
@@ -77,7 +77,7 @@ export function AboutSection() {
           <h3 className="text-lg font-semibold text-[var(--color-text)] mb-4">Education</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {profile.education.map((edu, i) => (
-              <div key={`${edu.degree}-${i}`} className="flex flex-col items-center text-center gap-2 p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)]">
+              <div key={`${edu.degree}-${i}`} className="flex flex-col items-center text-center gap-2 p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] hover:border-purple-500/30 hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-300">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-cyan-400 flex items-center justify-center shrink-0">
                   <span className="text-white text-xs font-bold">{i + 1}</span>
                 </div>

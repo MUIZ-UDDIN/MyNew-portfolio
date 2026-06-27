@@ -102,7 +102,7 @@ export function Header() {
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
-                  className="px-4 py-3 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-card)] rounded-lg transition-all"
+                  className="px-4 py-3 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-card)] hover:scale-[1.02] rounded-lg transition-all duration-300"
                 >
                   {item.label}
                 </a>
@@ -110,7 +110,7 @@ export function Header() {
               <a
                 href="#contact"
                 onClick={() => setMobileOpen(false)}
-                className="px-4 py-3 text-sm text-center bg-gradient-to-r from-purple-600 to-cyan-500 text-white rounded-full font-medium mt-2 hover:shadow-lg hover:shadow-purple-500/25 transition-all"
+                className="px-4 py-3 text-sm text-center bg-gradient-to-r from-purple-600 to-cyan-500 text-white rounded-full font-medium mt-2 hover:shadow-lg hover:shadow-purple-500/25 hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-300"
               >
                 Hire Me
               </a>

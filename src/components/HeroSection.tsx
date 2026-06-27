@@ -100,13 +100,13 @@ export function HeroSection() {
             >
               <a
                 href="#contact"
-                className="px-8 py-3 rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 hover:scale-105 transition-all"
+                className="px-8 py-3 rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 hover:scale-105 hover:-translate-y-0.5 transition-all duration-300"
               >
                 Get In Touch
               </a>
               <a
                 href="#projects"
-                className="px-8 py-3 rounded-full border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-card)] hover:scale-105 transition-all"
+                className="px-8 py-3 rounded-full border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-card)] hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10 hover:scale-105 hover:-translate-y-0.5 transition-all duration-300"
               >
                 View Projects
               </a>
@@ -130,7 +130,7 @@ export function HeroSection() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.8 + i * 0.15, duration: 0.5 }}
-                  className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:scale-110 transition-all"
+                  className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:scale-110 hover:-translate-y-0.5 transition-all duration-300"
                   aria-label={label}
                 >
                   <Icon className="w-5 h-5" />
