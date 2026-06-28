@@ -90,6 +90,7 @@ export default function RootLayout({
       data-theme="dark"
     >
       <head>
+        <meta name="google-site-verification" content="RiMAN2I_sldZAiR-3vjSp7G_v0nMMHTqZfoxYWTfVVU" />
         <script
           dangerouslySetInnerHTML={{
             __html: `try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}`,
