@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Muiz Ud Din" }],
   creator: "Muiz Ud Din",
-  metadataBase: new URL("https://muizuddin.dev"),
+  metadataBase: new URL("https://muizuddin.vercel.app"),
   openGraph: {
     type: "website",
     locale: "en_US",
