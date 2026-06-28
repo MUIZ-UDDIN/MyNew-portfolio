@@ -13,7 +13,6 @@ export default function Home() {
     <>
       <HeroSection />
       <StatsCounter />
-      <SectionDivider />
       <AboutSection />
       <SectionDivider />
       <SkillsSection />
@@ -23,7 +22,6 @@ export default function Home() {
       <ExperienceSection />
       <SectionDivider />
       <TestimonialsSection />
-      <SectionDivider />
       <ContactSection />
     </>
   )

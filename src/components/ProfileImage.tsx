@@ -1,12 +1,13 @@
 "use client"
 
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState } from "react"
 import { motion, useMotionValue, useSpring } from "framer-motion"
 import Image from "next/image"
 
 export function ProfileImage() {
   const ref = useRef<HTMLDivElement>(null)
   const [imgError, setImgError] = useState(false)
+  const [loaded, setLoaded] = useState(false)
   const [glowPos, setGlowPos] = useState({ x: 50, y: 50 })
 
   const mouseX = useMotionValue(0)
@@ -64,6 +65,10 @@ export function ProfileImage() {
 
       {/* Image container */}
       <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-xl shadow-purple-500/5 ring-1 ring-[var(--color-border)]">
+        {!loaded && !imgError && (
+          <div className="absolute inset-0 bg-[var(--color-bg-card)] animate-pulse" />
+        )}
+
         {imgError ? (
           <div className="w-full h-full flex items-center justify-center">
             <div className="text-center">
@@ -83,6 +88,7 @@ export function ProfileImage() {
                 fill
                 className="object-cover"
                 style={{ objectPosition: 'center 35%' }}
+                onLoad={() => setLoaded(true)}
                 onError={() => setImgError(true)}
                 priority
                 quality={100}

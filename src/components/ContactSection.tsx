@@ -9,7 +9,7 @@ export function ContactSection() {
   const [submitted, setSubmitted] = useState(false)
   const [sending, setSending] = useState(false)
   const [error, setError] = useState("")
-  const email = profile.email !== "muizdin143@outlook.com" ? profile.email : ""
+  const email = profile.email || "muizdin143@outlook.com"
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -61,14 +61,14 @@ export function ContactSection() {
             viewport={{ once: false, margin: "-50px" }}
             className="lg:col-span-2 space-y-4"
           >
-            <a href={email ? `mailto:${email}` : undefined} className="block">
+            <a href={`mailto:${email}`} className="block">
               <div className="glass rounded-2xl p-5 flex items-center gap-4 glass-hover tilt-card">
                 <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
                   <Mail className="w-5 h-5 text-purple-400" />
                 </div>
                 <div>
                   <p className="text-xs text-[var(--color-text-muted)]">Email</p>
-                  <p className="text-sm text-[var(--color-text)]">{email || "muizdin143@outlook.com"}</p>
+                  <p className="text-sm text-[var(--color-text)]">{email}</p>
                 </div>
               </div>
             </a>
@@ -174,11 +174,9 @@ export function ContactSection() {
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     <span>
                       {error}{" "}
-                      {email && (
-                        <a href={`mailto:${email}`} className="underline hover:text-amber-300">
-                          {email}
-                        </a>
-                      )}
+                      <a href={`mailto:${email}`} className="underline hover:text-amber-300">
+                        {email}
+                      </a>
                     </span>
                   </div>
                 )}

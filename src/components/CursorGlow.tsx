@@ -1,24 +1,25 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef } from "react"
 import { useTheme } from "@/lib/ThemeContext"
 
 export function CursorGlow() {
-  const [pos, setPos] = useState({ x: -200, y: -200 })
+  const elRef = useRef<HTMLDivElement>(null)
   const { theme } = useTheme()
 
   useEffect(() => {
-    const onMove = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY })
-    window.addEventListener("mousemove", onMove)
+    if (theme !== "dark") return
+    const el = elRef.current
+    if (!el) return
+    const onMove = (e: MouseEvent) => {
+      el.style.left = `${e.clientX}px`
+      el.style.top = `${e.clientY}px`
+    }
+    window.addEventListener("mousemove", onMove, { passive: true })
     return () => window.removeEventListener("mousemove", onMove)
-  }, [])
+  }, [theme])
 
   if (theme !== "dark") return null
 
-  return (
-    <div
-      className="cursor-glow"
-      style={{ left: pos.x, right: "auto", top: pos.y }}
-    />
-  )
+  return <div ref={elRef} className="cursor-glow" style={{ left: -200, top: -200 }} />
 }

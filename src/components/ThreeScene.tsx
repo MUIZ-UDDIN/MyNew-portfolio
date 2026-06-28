@@ -220,8 +220,9 @@ export function ThreeScene({ noPost }: { noPost?: boolean }) {
 
   useEffect(() => {
     const orig = console.warn
+    const msg = "THREE.Clock: .getElapsedTime() is deprecated"
     console.warn = (...args: unknown[]) => {
-      if (typeof args[0] === "string" && args[0].includes("THREE.Clock")) return
+      if (typeof args[0] === "string" && args[0] === msg) return
       return orig.apply(console, args)
     }
     return () => { console.warn = orig }

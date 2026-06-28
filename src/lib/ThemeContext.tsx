@@ -13,8 +13,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>("dark")
 
   useEffect(() => {
-    const saved = localStorage.getItem("theme") as Theme | null
-    if (saved) setTheme(saved)
+    const fromAttr = document.documentElement.getAttribute("data-theme") as Theme | null
+    if (fromAttr) setTheme(fromAttr)
   }, [])
 
   useEffect(() => {
