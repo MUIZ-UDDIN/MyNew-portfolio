@@ -130,7 +130,7 @@ export function HeroSection() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.8 + i * 0.15, duration: 0.5 }}
-                  className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:scale-110 hover:-translate-y-0.5 transition-all duration-300"
+                  className="text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:scale-110 hover:-translate-y-0.5 transition-all duration-300"
                   aria-label={label}
                 >
                   <Icon className="w-5 h-5" />
