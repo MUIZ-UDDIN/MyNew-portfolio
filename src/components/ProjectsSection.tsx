@@ -21,7 +21,7 @@ export function ProjectsSection() {
   }, [])
 
   const filtered = active === "All" ? projects : projects.filter((p) => p.category === active)
-  const maxVisible = isMobile ? 3 : filtered.length
+  const maxVisible = isMobile ? 3 : 6
   const visible = expanded ? filtered : filtered.slice(0, maxVisible)
   const hasMore = filtered.length > maxVisible
 

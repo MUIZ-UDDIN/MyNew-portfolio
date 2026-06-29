@@ -78,4 +78,18 @@ export const testimonials = [
     rating: 5.0,
     amount: "$15.00",
   },
+  {
+    quote: "I recommend him, very active and reliable.",
+    author: "Karol Gajewski",
+    role: "Full-stack Developer: Web Scraper, Database, Website + VM Deployment",
+    rating: 5.0,
+    amount: "$650.00",
+  },
+  {
+    quote: "Muiz is a skilled web developer who is professional and easy to work with. Highly recommend him for projects requiring design skills and speed.",
+    author: "Ming Khor",
+    role: "Web Development Project",
+    rating: 5.0,
+    amount: "$650.00",
+  },
 ]
