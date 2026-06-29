@@ -1,10 +1,7 @@
+import { SiUpwork } from "react-icons/si"
+
 export function UpworkIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="9.5" />
-      <path d="M8 8v8c0 .55.45 1 1 1s1-.45 1-1v-3c0-.55.45-1 1-1s1 .45 1 1v3c0 .55.45 1 1 1s1-.45 1-1V8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
+  return <SiUpwork className={className} />
 }
 
 export function GithubIcon({ className }: { className?: string }) {
