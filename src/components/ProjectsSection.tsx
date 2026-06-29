@@ -79,15 +79,43 @@ export function ProjectsSection() {
                   <span className="text-[10px] uppercase tracking-widest text-purple-400 font-medium">
                     {project.category}
                   </span>
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
-                    aria-label={`${project.title} GitHub`}
-                  >
-                    <GithubIcon className="w-4 h-4" />
-                  </a>
+                  <div className="flex items-center gap-2">
+                    {project.private && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 font-medium">
+                        Private
+                      </span>
+                    )}
+                    {project.github ? (
+                      <a
+                        href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
+                        aria-label={`${project.title} GitHub`}
+                      >
+                        <GithubIcon className="w-4 h-4" />
+                      </a>
+                    ) : project.url ? (
+                      <a
+                        href={project.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors text-xs"
+                        aria-label={`${project.title} site`}
+                      >
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                          <polyline points="15 3 21 3 21 9" />
+                          <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                      </a>
+                    ) : (
+                      <svg className="w-4 h-4 text-[var(--color-text-muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0110 0v4" />
+                      </svg>
+                    )}
+                  </div>
                 </div>
 
                 <h3 className="text-lg font-semibold text-[var(--color-text)] mb-2">{project.title}</h3>
