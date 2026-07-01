@@ -22,11 +22,11 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Muiz Ud Din | Data Scientist & AI Engineer",
+    default: "Muiz Ud Din | Data Scientist & Full-Stack AI Engineer",
     template: "%s | Muiz Ud Din",
   },
   description:
-    "Top Rated Data Scientist and Full-Stack AI Engineer specializing in ML, Deep Learning, NLP, Generative AI, and Automation. Building production-ready AI solutions.",
+    "Top Rated Data Scientist and AI Engineer specializing in Python automation, ML, NLP, and Generative AI. 4+ years building production-ready AI solutions for global clients.",
   keywords: [
     "Data Scientist",
     "AI Engineer",
@@ -38,32 +38,38 @@ export const metadata: Metadata = {
     "React",
     "Full-Stack AI",
     "Automation",
+    "Upwork Top Rated",
   ],
   authors: [{ name: "Muiz Ud Din" }],
   creator: "Muiz Ud Din",
+  publisher: "Muiz Ud Din",
   metadataBase: new URL("https://muizuddin.vercel.app"),
+  appleWebApp: { title: "Muiz Ud Din" },
+  applicationName: "Muiz Ud Din Portfolio",
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "Muiz Ud Din Portfolio",
-    title: "Muiz Ud Din | Data Scientist & AI Engineer",
+    siteName: "Muiz Ud Din - Data Scientist & AI Engineer",
+    title: "Muiz Ud Din | Data Scientist & Full-Stack AI Engineer",
     description:
-      "Top Rated Data Scientist and Full-Stack AI Engineer specializing in ML, Deep Learning, NLP, Generative AI, and Automation.",
+      "Top Rated Data Scientist and AI Engineer with 4+ years of experience. Specializing in Python automation, ML, NLP, and Generative AI for global clients.",
+    url: "https://muizuddin.vercel.app",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Muiz Ud Din Portfolio",
+        alt: "Muiz Ud Din - Data Scientist & AI Engineer Portfolio",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Muiz Ud Din | Data Scientist & AI Engineer",
+    title: "Muiz Ud Din | Data Scientist & Full-Stack AI Engineer",
     description:
-      "Top Rated Data Scientist and Full-Stack AI Engineer specializing in ML, Deep Learning, NLP, Generative AI, and Automation.",
+      "Top Rated Data Scientist and AI Engineer with 4+ years of experience. Specializing in Python automation, ML, NLP, and Generative AI.",
     images: ["/og-image.png"],
+    creator: "@muizuddin",
   },
   robots: {
     index: true,
@@ -75,6 +81,10 @@ export const metadata: Metadata = {
       "max-image-preview": "large",
       "max-snippet": -1,
     },
+  },
+  icons: {
+    icon: "/ProfileBG.png",
+    apple: "/ProfileBG.png",
   },
 }
 
@@ -103,7 +113,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Person",
               name: "Muiz Ud Din",
-              url: "https://muizuddin.dev",
+              url: "https://muizuddin.vercel.app",
               jobTitle: "Data Scientist & Full-Stack AI Engineer",
               knowsAbout: [
                 "Machine Learning",
