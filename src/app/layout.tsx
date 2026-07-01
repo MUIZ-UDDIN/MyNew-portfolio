@@ -109,23 +109,33 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Person",
-              name: "Muiz Ud Din",
-              url: "https://muizuddin.vercel.app",
-              jobTitle: "Data Scientist & Full-Stack AI Engineer",
-              knowsAbout: [
-                "Machine Learning",
-                "Deep Learning",
-                "Natural Language Processing",
-                "Generative AI",
-                "Python",
-                "React",
-                "Full-Stack Development",
-              ],
-              alumniOf: ["Karakarum International University", "GCCES"],
-            }),
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "Person",
+                name: "Muiz Ud Din",
+                url: "https://muizuddin.vercel.app",
+                jobTitle: "Data Scientist & Full-Stack AI Engineer",
+                knowsAbout: [
+                  "Machine Learning",
+                  "Deep Learning",
+                  "Natural Language Processing",
+                  "Generative AI",
+                  "Python",
+                  "React",
+                  "Full-Stack Development",
+                ],
+                alumniOf: ["Karakarum International University", "GCCES"],
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                name: "Muiz Ud Din",
+                url: "https://muizuddin.vercel.app",
+                description:
+                  "Top Rated Data Scientist and AI Engineer specializing in Python automation, ML, NLP, and Generative AI.",
+              },
+            ]),
           }}
         />
       </head>
