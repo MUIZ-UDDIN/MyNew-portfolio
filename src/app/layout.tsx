@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Muiz Ud Din" }],
   creator: "Muiz Ud Din",
   publisher: "Muiz Ud Din",
-  metadataBase: new URL("https://muizuddin.vercel.app"),
+  metadataBase: new URL("https://muizuddin.com"),
   appleWebApp: { title: "Muiz Ud Din" },
   applicationName: "Muiz Ud Din Portfolio",
   openGraph: {
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     title: "Muiz Ud Din | Data Scientist & Full-Stack AI Engineer",
     description:
       "Top Rated Data Scientist and AI Engineer with 4+ years of experience. Specializing in Python automation, ML, NLP, and Generative AI for global clients.",
-    url: "https://muizuddin.vercel.app",
+    url: "https://muizuddin.com",
     images: [
       {
         url: "/og-image.png",
@@ -101,6 +101,7 @@ export default function RootLayout({
     >
       <head>
         <meta name="google-site-verification" content="RiMAN2I_sldZAiR-3vjSp7G_v0nMMHTqZfoxYWTfVVU" />
+        <meta name="google-site-verification" content="nsEHXi17mOeok3M9wSXOStaicZKo-a7hp88d-wvmg80" />
         <script
           dangerouslySetInnerHTML={{
             __html: `try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}`,
@@ -114,7 +115,7 @@ export default function RootLayout({
                 "@context": "https://schema.org",
                 "@type": "Person",
                 name: "Muiz Ud Din",
-                url: "https://muizuddin.vercel.app",
+                url: "https://muizuddin.com",
                 jobTitle: "Data Scientist & Full-Stack AI Engineer",
                 knowsAbout: [
                   "Machine Learning",
@@ -131,7 +132,7 @@ export default function RootLayout({
                 "@context": "https://schema.org",
                 "@type": "WebSite",
                 name: "Muiz Ud Din",
-                url: "https://muizuddin.vercel.app",
+                url: "https://muizuddin.com",
                 description:
                   "Top Rated Data Scientist and AI Engineer specializing in Python automation, ML, NLP, and Generative AI.",
               },
