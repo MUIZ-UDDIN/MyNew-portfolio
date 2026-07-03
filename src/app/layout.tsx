@@ -87,7 +87,7 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/ProfileBG.png",
+    icon: "/FaviconProfileBG.png",
     apple: "/ProfileBG.png",
   },
 }
