@@ -91,7 +91,7 @@ export function ProfileImage() {
                 onLoad={() => setLoaded(true)}
                 onError={() => setImgError(true)}
                 priority
-                quality={100}
+                quality={85}
                 sizes="(max-width: 640px) 192px, (max-width: 1024px) 224px, 256px"
               />
             </div>

@@ -106,6 +106,9 @@ export default function RootLayout({
       <head>
         <meta name="google-site-verification" content="RiMAN2I_sldZAiR-3vjSp7G_v0nMMHTqZfoxYWTfVVU" />
         <meta name="google-site-verification" content="nsEHXi17mOeok3M9wSXOStaicZKo-a7hp88d-wvmg80" />
+        <link rel="preconnect" href="https://muizuddin.com" />
+        <link rel="dns-prefetch" href="https://muizuddin.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script
           dangerouslySetInnerHTML={{
             __html: `try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}`,

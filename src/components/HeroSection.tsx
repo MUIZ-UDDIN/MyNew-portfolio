@@ -4,9 +4,13 @@ import { motion, useScroll, useTransform } from "framer-motion"
 import { useRef } from "react"
 import { ArrowDown } from "lucide-react"
 import { GithubIcon, UpworkIcon } from "@/lib/icons"
-import { ThreeScene } from "./ThreeScene"
+import dynamic from "next/dynamic"
 import { ProfileImage } from "./ProfileImage"
 import { profile } from "@/data/profile"
+
+const ThreeScene = dynamic(() => import("./ThreeScene").then((m) => ({ default: m.ThreeScene })), {
+  ssr: false,
+})
 
 export function HeroSection() {
   const ref = useRef<HTMLDivElement>(null)
