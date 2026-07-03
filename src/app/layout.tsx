@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Inter, JetBrains_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import "./globals.css"
 import { ThemeProvider } from "@/lib/ThemeContext"
 import { Header } from "@/components/Header"
@@ -44,6 +45,9 @@ export const metadata: Metadata = {
   creator: "Muiz Ud Din",
   publisher: "Muiz Ud Din",
   metadataBase: new URL("https://muizuddin.com"),
+  alternates: {
+    canonical: "https://muizuddin.com",
+  },
   appleWebApp: { title: "Muiz Ud Din" },
   applicationName: "Muiz Ud Din Portfolio",
   openGraph: {
@@ -150,6 +154,7 @@ export default function RootLayout({
           <Header />
           <main className="flex-1 relative z-10">{children}</main>
           <Analytics />
+          <SpeedInsights />
           <Footer />
         </ThemeProvider>
       </body>
