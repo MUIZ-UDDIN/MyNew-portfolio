@@ -67,10 +67,12 @@ export function TestimonialsSection() {
         </motion.div>
       </div>
 
-      <div className="marquee-track flex">
-        {[...testimonials, ...testimonials].map((t, i) => (
-          <TestimonialCard key={i} t={t} />
-        ))}
+      <div className="px-4 sm:px-6 lg:px-8">
+        <div className="marquee-track flex">
+          {[...testimonials, ...testimonials].map((t, i) => (
+            <TestimonialCard key={i} t={t} />
+          ))}
+        </div>
       </div>
     </section>
   )
