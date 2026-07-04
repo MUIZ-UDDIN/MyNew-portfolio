@@ -7,7 +7,13 @@ import { testimonials } from "@/data/profile"
 
 function TestimonialCard({ t }: { t: (typeof testimonials)[0] }) {
   return (
-    <div className="glass rounded-2xl p-6 flex flex-col flex-shrink-0 w-[300px] sm:w-[360px] mx-3 tilt-card">
+    <motion.div
+      whileHover={{ y: -4, rotateX: 2, rotateY: 2 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+      className="glass rounded-2xl p-6 flex flex-col flex-shrink-0 w-[300px] sm:w-[360px]"
+      style={{ transformStyle: "preserve-3d", perspective: "1000px" }}
+    >
       <Quote className="w-6 h-6 text-purple-400/30 mb-4" />
       <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed mb-6 flex-1 italic">
         &ldquo;{t.quote}&rdquo;
@@ -31,7 +37,7 @@ function TestimonialCard({ t }: { t: (typeof testimonials)[0] }) {
           <span className="text-xs text-green-400/80 font-mono">{t.amount}</span>
         )}
       </div>
-    </div>
+    </motion.div>
   )
 }
 
@@ -105,7 +111,7 @@ export function TestimonialsSection() {
 
   return (
     <section className="relative py-24 overflow-hidden">
-      <div className="px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -121,10 +127,10 @@ export function TestimonialsSection() {
         </motion.div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 select-none">
+      <div className="select-none">
         <div
           ref={trackRef}
-          className="flex"
+          className="flex gap-6 pl-4 sm:pl-6 lg:pl-0"
           style={{ touchAction: "pan-y" }}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
