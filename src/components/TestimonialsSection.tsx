@@ -93,24 +93,22 @@ export function TestimonialsSection() {
       </div>
 
       <div className="px-4 sm:px-6 lg:px-8">
-        <div className="overflow-hidden rounded-2xl">
-          <div
-            ref={trackRef}
-            className="testimonials-scroll flex overflow-x-auto overflow-y-hidden"
-            onMouseEnter={() => { isPausedRef.current = true }}
-            onMouseLeave={() => { isPausedRef.current = false }}
-            onTouchStart={() => { isPausedRef.current = true }}
-            onTouchEnd={() => { isPausedRef.current = false }}
-            onWheel={() => {
-              isPausedRef.current = true
-              setTimeout(() => { isPausedRef.current = false }, 3000)
-            }}
-          >
-            <div className="flex shrink-0">
-              {[...testimonials, ...testimonials].map((t, i) => (
-                <TestimonialCard key={i} t={t} />
-              ))}
-            </div>
+        <div
+          ref={trackRef}
+          className="testimonials-scroll flex overflow-x-auto"
+          onMouseEnter={() => { isPausedRef.current = true }}
+          onMouseLeave={() => { isPausedRef.current = false }}
+          onTouchStart={() => { isPausedRef.current = true }}
+          onTouchEnd={() => { isPausedRef.current = false }}
+          onWheel={() => {
+            isPausedRef.current = true
+            setTimeout(() => { isPausedRef.current = false }, 3000)
+          }}
+        >
+          <div className="flex shrink-0">
+            {[...testimonials, ...testimonials].map((t, i) => (
+              <TestimonialCard key={i} t={t} />
+            ))}
           </div>
         </div>
       </div>
