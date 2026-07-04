@@ -1,6 +1,7 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { useRef, useState, useEffect } from "react"
+import { motion, useMotionValue } from "framer-motion"
 import { Star, Quote } from "lucide-react"
 import { testimonials } from "@/data/profile"
 
@@ -35,22 +36,53 @@ function TestimonialCard({ t }: { t: (typeof testimonials)[0] }) {
 }
 
 export function TestimonialsSection() {
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [contentWidth, setContentWidth] = useState(0)
+  const x = useMotionValue(0)
+  const isDraggingRef = useRef(false)
+  const speedRef = useRef(0.35)
+
+  useEffect(() => {
+    const check = () => {
+      speedRef.current = window.innerWidth < 768 ? 0.6 : 0.35
+    }
+    check()
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
+
+  useEffect(() => {
+    if (trackRef.current) {
+      setContentWidth(trackRef.current.scrollWidth / 2)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (contentWidth === 0) return
+    let rafId: number
+    let prevTime = performance.now()
+
+    const tick = (time: number) => {
+      if (!isDraggingRef.current) {
+        const delta = time - prevTime
+        const step = speedRef.current * (delta / 16)
+        const next = x.get() - step
+        if (next <= -contentWidth) {
+          x.set(next + contentWidth)
+        } else {
+          x.set(next)
+        }
+      }
+      prevTime = time
+      rafId = requestAnimationFrame(tick)
+    }
+
+    rafId = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafId)
+  }, [contentWidth, x])
+
   return (
     <section className="relative py-24 overflow-hidden">
-      <style>{`
-        @keyframes marquee-scroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .marquee-track {
-          animation: marquee-scroll 50s linear infinite;
-          will-change: transform;
-        }
-        .marquee-track:hover {
-          animation-play-state: paused;
-        }
-      `}</style>
-
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -68,11 +100,21 @@ export function TestimonialsSection() {
       </div>
 
       <div className="px-4 sm:px-6 lg:px-8">
-        <div className="marquee-track flex">
+        <motion.div
+          ref={trackRef}
+          className="flex cursor-grab active:cursor-grabbing"
+          style={{ x }}
+          drag="x"
+          dragConstraints={{ left: -contentWidth, right: 0 }}
+          dragElastic={0.05}
+          dragMomentum={false}
+          onDragStart={() => { isDraggingRef.current = true }}
+          onDragEnd={() => { isDraggingRef.current = false }}
+        >
           {[...testimonials, ...testimonials].map((t, i) => (
             <TestimonialCard key={i} t={t} />
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   )
