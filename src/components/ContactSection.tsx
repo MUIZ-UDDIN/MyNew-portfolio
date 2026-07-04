@@ -184,7 +184,7 @@ export function ContactSection() {
                 <button
                   type="submit"
                   disabled={sending}
-                  className="w-full px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:hover:scale-100 disabled:hover:-translate-y-0"
+                  className="w-full px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-medium cursor:pointer hover:shadow-lg hover:shadow-purple-500/25 hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:hover:scale-100 disabled:hover:-translate-y-0"
                 >
                   <Send className="w-4 h-4" />
                   {sending ? "Sending..." : "Send Message"}
