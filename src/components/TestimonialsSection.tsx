@@ -1,13 +1,13 @@
 "use client"
 
-import { useRef, useState, useEffect } from "react"
-import { motion, useMotionValue } from "framer-motion"
+import { useRef, useEffect } from "react"
+import { motion } from "framer-motion"
 import { Star, Quote } from "lucide-react"
 import { testimonials } from "@/data/profile"
 
 function TestimonialCard({ t }: { t: (typeof testimonials)[0] }) {
   return (
-    <div className="glass rounded-2xl p-6 flex flex-col flex-shrink-0 w-[340px] sm:w-[380px] mx-3 tilt-card">
+    <div className="glass rounded-2xl p-6 flex flex-col flex-shrink-0 w-[300px] sm:w-[360px] mx-3 tilt-card">
       <Quote className="w-6 h-6 text-purple-400/30 mb-4" />
       <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed mb-6 flex-1 italic">
         &ldquo;{t.quote}&rdquo;
@@ -37,14 +37,12 @@ function TestimonialCard({ t }: { t: (typeof testimonials)[0] }) {
 
 export function TestimonialsSection() {
   const trackRef = useRef<HTMLDivElement>(null)
-  const [contentWidth, setContentWidth] = useState(0)
-  const x = useMotionValue(0)
-  const isDraggingRef = useRef(false)
-  const speedRef = useRef(0.35)
+  const isPausedRef = useRef(false)
+  const speedRef = useRef(0.5)
 
   useEffect(() => {
     const check = () => {
-      speedRef.current = window.innerWidth < 768 ? 0.6 : 0.35
+      speedRef.current = window.innerWidth < 768 ? 1 : 0.5
     }
     check()
     window.addEventListener("resize", check)
@@ -52,37 +50,32 @@ export function TestimonialsSection() {
   }, [])
 
   useEffect(() => {
-    if (trackRef.current) {
-      setContentWidth(trackRef.current.scrollWidth / 2)
-    }
-  }, [])
+    const el = trackRef.current
+    if (!el) return
 
-  useEffect(() => {
-    if (contentWidth === 0) return
     let rafId: number
-    let prevTime = performance.now()
 
-    const tick = (time: number) => {
-      if (!isDraggingRef.current) {
-        const delta = time - prevTime
-        const step = speedRef.current * (delta / 16)
-        const next = x.get() - step
-        if (next <= -contentWidth) {
-          x.set(next + contentWidth)
-        } else {
-          x.set(next)
+    const tick = () => {
+      if (!isPausedRef.current) {
+        el.scrollLeft += speedRef.current
+        if (el.scrollLeft >= el.scrollWidth / 2) {
+          el.scrollLeft = 0
         }
       }
-      prevTime = time
       rafId = requestAnimationFrame(tick)
     }
 
     rafId = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(rafId)
-  }, [contentWidth, x])
+  }, [])
 
   return (
     <section className="relative py-24 overflow-hidden">
+      <style>{`
+        .testimonials-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+        .testimonials-scroll::-webkit-scrollbar { display: none; }
+      `}</style>
+
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -100,21 +93,26 @@ export function TestimonialsSection() {
       </div>
 
       <div className="px-4 sm:px-6 lg:px-8">
-        <motion.div
-          ref={trackRef}
-          className="flex cursor-grab active:cursor-grabbing"
-          style={{ x }}
-          drag="x"
-          dragConstraints={{ left: -contentWidth, right: 0 }}
-          dragElastic={0.05}
-          dragMomentum={false}
-          onDragStart={() => { isDraggingRef.current = true }}
-          onDragEnd={() => { isDraggingRef.current = false }}
-        >
-          {[...testimonials, ...testimonials].map((t, i) => (
-            <TestimonialCard key={i} t={t} />
-          ))}
-        </motion.div>
+        <div className="overflow-hidden rounded-2xl">
+          <div
+            ref={trackRef}
+            className="testimonials-scroll flex overflow-x-auto overflow-y-hidden"
+            onMouseEnter={() => { isPausedRef.current = true }}
+            onMouseLeave={() => { isPausedRef.current = false }}
+            onTouchStart={() => { isPausedRef.current = true }}
+            onTouchEnd={() => { isPausedRef.current = false }}
+            onWheel={() => {
+              isPausedRef.current = true
+              setTimeout(() => { isPausedRef.current = false }, 3000)
+            }}
+          >
+            <div className="flex shrink-0">
+              {[...testimonials, ...testimonials].map((t, i) => (
+                <TestimonialCard key={i} t={t} />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   )
