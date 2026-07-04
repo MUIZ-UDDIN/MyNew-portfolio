@@ -105,7 +105,7 @@ export function TestimonialsSection() {
 
   return (
     <section className="relative py-24 overflow-hidden">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+      <div className="px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
