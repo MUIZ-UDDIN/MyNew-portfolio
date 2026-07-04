@@ -35,8 +35,8 @@ export const skills = {
   "Full-Stack": ["React", "Next.js", "Node.js", "FastAPI", "Flask", "SQL", "Supabase"],
   "Data Analytics": ["Power BI", "Tableau", "Pandas", "NumPy", "SQL"],
   "Vibe Coding": ["Cursor", "Claude", "ChatGPT", "Prompt Engineering", "AI-Assisted Dev"],
-  Automation: ["Playwright", "Selenium", "n8n", "Make", "Python"],
-  DevOps: ["Docker", "VPS Deployment", "Git", "Linux/Ubuntu"]
+  "Automation": ["Playwright", "Selenium", "n8n", "Make", "Python"],
+  "DevOps": ["Docker", "VPS Deployment", "Git", "Linux/Ubuntu"]
 }
 
 export const experience = [
