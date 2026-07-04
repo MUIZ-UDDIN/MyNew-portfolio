@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Star, Quote } from "lucide-react"
 import { testimonials } from "@/data/profile"
@@ -39,6 +39,11 @@ export function TestimonialsSection() {
   const trackRef = useRef<HTMLDivElement>(null)
   const isPausedRef = useRef(false)
   const speedRef = useRef(0.5)
+  const posRef = useRef(0)
+  const draggingRef = useRef(false)
+  const dragStartRef = useRef(0)
+  const dragStartPosRef = useRef(0)
+  const [trackWidth, setTrackWidth] = useState(0)
 
   useEffect(() => {
     const check = () => {
@@ -50,32 +55,56 @@ export function TestimonialsSection() {
   }, [])
 
   useEffect(() => {
+    if (trackRef.current) {
+      setTrackWidth(trackRef.current.scrollWidth / 2)
+    }
+  }, [])
+
+  useEffect(() => {
     const el = trackRef.current
-    if (!el) return
+    if (!el || trackWidth === 0) return
 
     let rafId: number
 
     const tick = () => {
-      if (!isPausedRef.current) {
-        el.scrollLeft += speedRef.current
-        if (el.scrollLeft >= el.scrollWidth / 2) {
-          el.scrollLeft = 0
+      if (!isPausedRef.current && !draggingRef.current) {
+        posRef.current -= speedRef.current
+        if (posRef.current <= -trackWidth) {
+          posRef.current += trackWidth
         }
+        el.style.transform = `translateX(${posRef.current}px)`
       }
       rafId = requestAnimationFrame(tick)
     }
 
     rafId = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(rafId)
-  }, [])
+  }, [trackWidth])
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    draggingRef.current = true
+    isPausedRef.current = true
+    dragStartRef.current = e.clientX
+    dragStartPosRef.current = posRef.current
+    const el = trackRef.current
+    if (el) el.setPointerCapture(e.pointerId)
+  }
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!draggingRef.current) return
+    const delta = e.clientX - dragStartRef.current
+    posRef.current = dragStartPosRef.current + delta
+    const el = trackRef.current
+    if (el) el.style.transform = `translateX(${posRef.current}px)`
+  }
+
+  const handlePointerUp = () => {
+    draggingRef.current = false
+    isPausedRef.current = false
+  }
 
   return (
     <section className="relative py-24 overflow-hidden">
-      <style>{`
-        .testimonials-scroll { scrollbar-width: none; -ms-overflow-style: none; }
-        .testimonials-scroll::-webkit-scrollbar { display: none; }
-      `}</style>
-
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -92,12 +121,17 @@ export function TestimonialsSection() {
         </motion.div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 select-none">
         <div
           ref={trackRef}
-          className="testimonials-scroll flex"
-          onMouseEnter={() => { isPausedRef.current = true }}
-          onMouseLeave={() => { isPausedRef.current = false }}
+          className="flex"
+          style={{ touchAction: "pan-y" }}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          onMouseEnter={() => { if (!draggingRef.current) isPausedRef.current = true }}
+          onMouseLeave={() => { if (!draggingRef.current) isPausedRef.current = false }}
           onTouchStart={() => { isPausedRef.current = true }}
           onTouchEnd={() => { isPausedRef.current = false }}
           onWheel={() => {
@@ -105,11 +139,9 @@ export function TestimonialsSection() {
             setTimeout(() => { isPausedRef.current = false }, 3000)
           }}
         >
-          <div className="flex shrink-0">
-            {[...testimonials, ...testimonials].map((t, i) => (
-              <TestimonialCard key={i} t={t} />
-            ))}
-          </div>
+          {[...testimonials, ...testimonials].map((t, i) => (
+            <TestimonialCard key={i} t={t} />
+          ))}
         </div>
       </div>
     </section>
