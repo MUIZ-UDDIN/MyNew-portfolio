@@ -8,7 +8,7 @@ import { testimonials } from "@/data/profile"
 function TestimonialCard({ t }: { t: (typeof testimonials)[0] }) {
   return (
     <motion.div
-      whileHover={{ y: -3 }}
+      whileHover={{ y: -3, rotateX: 1, rotateY: 1 }}
       whileTap={{ scale: 0.97 }}
       transition={{ duration: 0.15, ease: "easeOut" }}
       className="glass rounded-2xl p-6 flex flex-col flex-shrink-0 w-[300px] sm:w-[360px]"
@@ -110,7 +110,7 @@ export function TestimonialsSection() {
   }
 
   return (
-    <section className="relative py-24">
+    <section className="relative py-24 overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
