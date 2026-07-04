@@ -95,7 +95,7 @@ export function TestimonialsSection() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div
           ref={trackRef}
-          className="testimonials-scroll flex overflow-x-auto"
+          className="testimonials-scroll flex"
           onMouseEnter={() => { isPausedRef.current = true }}
           onMouseLeave={() => { isPausedRef.current = false }}
           onTouchStart={() => { isPausedRef.current = true }}
