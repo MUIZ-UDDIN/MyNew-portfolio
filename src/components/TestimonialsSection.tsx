@@ -8,9 +8,9 @@ import { testimonials } from "@/data/profile"
 function TestimonialCard({ t }: { t: (typeof testimonials)[0] }) {
   return (
     <motion.div
-      whileHover={{ y: -4, rotateX: 2, rotateY: 2 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      whileHover={{ y: -3, rotateX: 1, rotateY: 1 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
       className="glass rounded-2xl p-6 flex flex-col flex-shrink-0 w-[300px] sm:w-[360px]"
       style={{ transformStyle: "preserve-3d", perspective: "1000px" }}
     >
@@ -46,14 +46,13 @@ export function TestimonialsSection() {
   const isPausedRef = useRef(false)
   const speedRef = useRef(0.5)
   const posRef = useRef(0)
-  const draggingRef = useRef(false)
   const dragStartRef = useRef(0)
   const dragStartPosRef = useRef(0)
   const [trackWidth, setTrackWidth] = useState(0)
 
   useEffect(() => {
     const check = () => {
-      speedRef.current = window.innerWidth < 768 ? 1 : 0.5
+      speedRef.current = window.innerWidth < 768 ? 1.2 : 0.6
     }
     check()
     window.addEventListener("resize", check)
@@ -73,7 +72,7 @@ export function TestimonialsSection() {
     let rafId: number
 
     const tick = () => {
-      if (!isPausedRef.current && !draggingRef.current) {
+      if (!isPausedRef.current) {
         posRef.current -= speedRef.current
         if (posRef.current <= -trackWidth) {
           posRef.current += trackWidth
@@ -88,25 +87,26 @@ export function TestimonialsSection() {
   }, [trackWidth])
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    draggingRef.current = true
     isPausedRef.current = true
     dragStartRef.current = e.clientX
     dragStartPosRef.current = posRef.current
-    const el = trackRef.current
-    if (el) el.setPointerCapture(e.pointerId)
-  }
 
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!draggingRef.current) return
-    const delta = e.clientX - dragStartRef.current
-    posRef.current = dragStartPosRef.current + delta
-    const el = trackRef.current
-    if (el) el.style.transform = `translateX(${posRef.current}px)`
-  }
+    const handleMove = (ev: PointerEvent) => {
+      const delta = ev.clientX - dragStartRef.current
+      posRef.current = dragStartPosRef.current + delta
+      if (trackRef.current) {
+        trackRef.current.style.transform = `translateX(${posRef.current}px)`
+      }
+    }
 
-  const handlePointerUp = () => {
-    draggingRef.current = false
-    isPausedRef.current = false
+    const handleUp = () => {
+      isPausedRef.current = false
+      document.removeEventListener("pointermove", handleMove)
+      document.removeEventListener("pointerup", handleUp)
+    }
+
+    document.addEventListener("pointermove", handleMove)
+    document.addEventListener("pointerup", handleUp)
   }
 
   return (
@@ -133,13 +133,8 @@ export function TestimonialsSection() {
           className="flex gap-6 pl-4 sm:pl-6 lg:pl-0"
           style={{ touchAction: "pan-y" }}
           onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
-          onMouseEnter={() => { if (!draggingRef.current) isPausedRef.current = true }}
-          onMouseLeave={() => { if (!draggingRef.current) isPausedRef.current = false }}
-          onTouchStart={() => { isPausedRef.current = true }}
-          onTouchEnd={() => { isPausedRef.current = false }}
+          onMouseEnter={() => { isPausedRef.current = true }}
+          onMouseLeave={() => { isPausedRef.current = false }}
           onWheel={() => {
             isPausedRef.current = true
             setTimeout(() => { isPausedRef.current = false }, 3000)
