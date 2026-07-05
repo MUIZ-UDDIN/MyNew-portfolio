@@ -2,6 +2,7 @@ export const profile = {
   name: "Muiz Ud Din",
   title: "Data Scientist & Full-Stack AI Engineer",
   tagline: "Building Intelligent Systems That Scale",
+  heroSubtext: "I build and deploy end-to-end AI systems — from autonomous LLM agents and large-scale web scraping to full-stack web apps in React and Next.js. Frontend, backend, APIs, WebSockets, Docker, VPS, and Hostinger deployment. If the data is locked behind a site, I'll get it out and turn it into a working product. Top Rated on Upwork. 4+ years shipping what others call 'too complex.'",
   email: "muizdin143@outlook.com",
   location: "Gilgit, Pakistan",
   upwork: {
@@ -24,8 +25,8 @@ export const profile = {
     upwork: "https://www.upwork.com/freelancers/~muizuddin",
   },
   about: [
-    "I'm a Top Rated Data Scientist and Full-Stack AI Engineer with 4+ years of experience. I specialize in developing complex Python automation workflows, Machine Learning (ML), Deep Learning (DL), and NLP models that solve real-world problems.",
-    "By merging Data Science with Full-Stack AI development, I build production-ready Generative AI systems and scalable infrastructure. My expertise spans LLM Agents, RAG systems, Web Scraping, and end-to-end automation."
+    "I started with Python scripts and never stopped building. Today, I'm the engineer you call when the data is messy, the deadline is tight, and the problem hasn't been solved before. Whether it's scraping a site that fights back at scale, training a model on sparse data, deploying an LLM agent that follows instructions, or wiring up a full-stack app with real-time WebSockets — I figure it out and ship it. HTML to Next.js, REST to WebSockets, local to Docker on a VPS — I handle the whole stack.",
+    "Beyond the code, I'm a curious soul who speaks three languages, loves a good challenge, and believes the best technology is invisible — it just makes people's lives easier. If it involves Python, web scraping, automation, AI, or deployment, I'm probably already building it."
   ]
 }
 
@@ -41,7 +42,7 @@ export const skills = {
 
 export const experience = [
   {
-    role: "Data Scientist",
+    role: "Data Science and AI",
     company: "NUST",
     period: "June 2023 - November 2023",
     description: "Completed an intensive Data Science program with projects in Data Visualization, Data Mining, NLP, and a comprehensive Capstone project.",
@@ -58,7 +59,7 @@ export const testimonials = [
   {
     quote: "Very pleasant cooperation, he always managed to solve the problems we encountered, and with varying degrees of success, we achieved the goal that met the current needs of the project.",
     author: "Karol Gajewski",
-    role: "Sport & AI Project",
+    role: "Full-stack Developer: Web Scraper, Database, Website + VM Deployment",
     rating: 5.0,
     amount: "$1,152.55",
     hours: 327,
@@ -66,7 +67,7 @@ export const testimonials = [
   {
     quote: "It was a pleasure to work with Mr. Muiz. Can't ask for more. Well organised, polite, smart, fast... I will continue working with him in the future and most recommended.",
     author: "Manuel Tomas",
-    role: "Full-stack Development",
+    role: "Sports and AI Project",
     rating: 5.0,
     amount: "$380.00",
     hours: 48,
@@ -88,8 +89,8 @@ export const testimonials = [
   {
     quote: "Muiz is a skilled web developer who is professional and easy to work with. Highly recommend him for projects requiring design skills and speed.",
     author: "Ming Khor",
-    role: "Web Development Project",
+    role: "Web Development for Essay Arrow E-Commerce",
     rating: 5.0,
-    amount: "$650.00",
+    amount: "$250.00",
   },
 ]

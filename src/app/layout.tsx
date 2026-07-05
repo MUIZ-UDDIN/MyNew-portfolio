@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     template: "%s | Muiz Ud Din",
   },
   description:
-    "Top Rated Data Scientist and AI Engineer specializing in Python automation, ML, NLP, and Generative AI. 4+ years building production-ready AI solutions for global clients.",
+    "Top Rated Data Scientist and Full-Stack AI Engineer specializing in Python automation, LLM Agents, RAG systems, web scraping, and Generative AI. 4+ years building end-to-end AI solutions from frontend to deployment for global clients.",
   keywords: [
     "Data Scientist",
     "AI Engineer",
@@ -37,8 +37,18 @@ export const metadata: Metadata = {
     "Generative AI",
     "Python",
     "React",
-    "Full-Stack AI",
+    "Next.js",
+    "Full-Stack Developer",
+    "Frontend Developer",
+    "Backend Developer",
     "Automation",
+    "Web Scraping",
+    "LLM Agents",
+    "RAG Systems",
+    "LangChain",
+    "TensorFlow",
+    "PyTorch",
+    "Docker",
     "Upwork Top Rated",
   ],
   authors: [{ name: "Muiz Ud Din" }],
@@ -56,7 +66,7 @@ export const metadata: Metadata = {
     siteName: "Muiz Ud Din - Data Scientist & AI Engineer",
     title: "Muiz Ud Din | Data Scientist & Full-Stack AI Engineer",
     description:
-      "Top Rated Data Scientist and AI Engineer with 4+ years of experience. Specializing in Python automation, ML, NLP, and Generative AI for global clients.",
+      "Top Rated Data Scientist and Full-Stack AI Engineer with 4+ years of experience. Specializing in Python automation, LLM Agents, RAG, web scraping, and Generative AI for global clients.",
     url: "https://muizuddin.com",
     images: [
       {
@@ -71,7 +81,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Muiz Ud Din | Data Scientist & Full-Stack AI Engineer",
     description:
-      "Top Rated Data Scientist and AI Engineer with 4+ years of experience. Specializing in Python automation, ML, NLP, and Generative AI.",
+      "Top Rated Data Scientist and Full-Stack AI Engineer with 4+ years of experience. Specializing in Python automation, LLM Agents, RAG, web scraping, and Generative AI.",
     images: ["/og-image.png"],
     creator: "@muizuddin",
   },
@@ -131,7 +141,14 @@ export default function RootLayout({
                   "Generative AI",
                   "Python",
                   "React",
+                  "Next.js",
                   "Full-Stack Development",
+                  "LLM Agents",
+                  "RAG Systems",
+                  "Web Scraping",
+                  "LangChain",
+                  "Docker",
+                  "Automation",
                 ],
                 alumniOf: ["Karakarum International University", "GCCES"],
               },
@@ -141,7 +158,7 @@ export default function RootLayout({
                 name: "Muiz Ud Din",
                 url: "https://muizuddin.com",
                 description:
-                  "Top Rated Data Scientist and AI Engineer specializing in Python automation, ML, NLP, and Generative AI.",
+                  "Top Rated Data Scientist and Full-Stack AI Engineer specializing in Python automation, LLM Agents, RAG, web scraping, and Generative AI.",
               },
             ]),
           }}

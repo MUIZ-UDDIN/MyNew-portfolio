@@ -93,7 +93,7 @@ export function HeroSection() {
               transition={{ duration: 1, delay: 1.2 }}
               className="max-w-xl text-base sm:text-lg text-[var(--color-text-secondary)] leading-relaxed mb-8"
             >
-              {profile.tagline} &mdash; {profile.about[0].slice(0, 150)}...
+              {profile.tagline} &mdash; {profile.heroSubtext}
             </motion.p>
 
             <motion.div
