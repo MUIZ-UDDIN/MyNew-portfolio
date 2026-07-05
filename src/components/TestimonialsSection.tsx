@@ -77,7 +77,7 @@ export function TestimonialsSection() {
         if (posRef.current <= -trackWidth) {
           posRef.current += trackWidth
         }
-        el.style.transform = `translateX(${posRef.current}px)`
+        el.style.transform = `translate3d(${posRef.current}px,0,0)`
       }
       rafId = requestAnimationFrame(tick)
     }
@@ -95,7 +95,7 @@ export function TestimonialsSection() {
       const delta = ev.clientX - dragStartRef.current
       posRef.current = dragStartPosRef.current + delta
       if (trackRef.current) {
-        trackRef.current.style.transform = `translateX(${posRef.current}px)`
+        trackRef.current.style.transform = `translate3d(${posRef.current}px,0,0)`
       }
     }
 
@@ -131,7 +131,7 @@ export function TestimonialsSection() {
         <div
           ref={trackRef}
           className="flex gap-6 pl-4 sm:pl-6 lg:pl-0"
-          style={{ touchAction: "pan-y" }}
+          style={{ touchAction: "pan-y", willChange: "transform", transform: "translateZ(0)" }}
           onPointerDown={handlePointerDown}
           onMouseEnter={() => { isPausedRef.current = true }}
           onMouseLeave={() => { isPausedRef.current = false }}
