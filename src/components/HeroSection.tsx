@@ -94,12 +94,14 @@ export function HeroSection() {
               transition={{ duration: 1, delay: 1.2 }}
               className="mb-8"
             >
-              <motion.p
-                layout
-                className={`max-w-xl text-base sm:text-lg text-[var(--color-text-secondary)] leading-relaxed ${!expanded ? "line-clamp-3" : ""}`}
+              <div
+                className="overflow-hidden transition-all duration-300 ease-in-out"
+                style={{ maxHeight: expanded ? "500px" : "4.5em" }}
               >
-                {profile.tagline} &mdash; {profile.heroSubtext}
-              </motion.p>
+                <p className="max-w-xl text-base sm:text-lg text-[var(--color-text-secondary)] leading-relaxed">
+                  {profile.tagline}, {profile.heroSubtext}
+                </p>
+              </div>
               <button
                 onClick={() => setExpanded(!expanded)}
                 className="cursor-pointer mt-1 inline-flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 transition-colors"
