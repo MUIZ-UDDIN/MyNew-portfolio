@@ -211,10 +211,12 @@ function Grid({ progressRef, isLight }: { progressRef: { raw: React.RefObject<nu
 function ProgressSmoother({ raw, smooth }: { raw: React.RefObject<number>; smooth: React.RefObject<number> }) {
   useFrame((_, delta) => {
     const diff = raw.current - smooth.current
-    if (Math.abs(diff) < 0.001) {
+    const abs = Math.abs(diff)
+    if (abs < 0.0001) {
       smooth.current = raw.current
     } else {
-      smooth.current += diff * Math.min(1, delta * 4)
+      const speed = abs > 0.1 ? delta * 15 : delta * 6
+      smooth.current += diff * Math.min(1, speed)
     }
   })
   return null
