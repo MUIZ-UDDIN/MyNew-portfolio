@@ -44,7 +44,6 @@ body {
   color: var(--color-text);
   font-family: var(--font-sans);
   overflow-x: hidden;
-  transition: background 0.3s, color 0.3s;
 }
 
 .gradient-text {
@@ -159,7 +158,6 @@ body {
 
 .section-divider svg path {
   fill: var(--color-bg);
-  transition: fill 0.3s;
 }
 
 @media (min-width: 640px) {
