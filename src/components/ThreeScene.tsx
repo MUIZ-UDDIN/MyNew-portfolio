@@ -8,16 +8,17 @@ import * as THREE from "three"
 import { useTheme } from "@/lib/ThemeContext"
 
 function useScrollProgressRef() {
-  const ref = useRef(0)
+  const raw = useRef(0)
+  const smooth = useRef(0)
   useEffect(() => {
     const onScroll = () => {
       const h = document.documentElement.scrollHeight - window.innerHeight
-      ref.current = Math.min(window.scrollY / h, 1)
+      raw.current = Math.min(window.scrollY / h, 1)
     }
     window.addEventListener("scroll", onScroll, { passive: true })
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
-  return ref
+  return { raw, smooth }
 }
 
 function useMousePositionRef() {
@@ -32,7 +33,7 @@ function useMousePositionRef() {
   return ref
 }
 
-function CentralShape({ progressRef, mouseRef, isLight }: { progressRef: React.RefObject<number>; mouseRef: React.RefObject<{ x: number; y: number }>; isLight: boolean }) {
+function CentralShape({ progressRef, mouseRef, isLight }: { progressRef: { raw: React.RefObject<number>; smooth: React.RefObject<number> }; mouseRef: React.RefObject<{ x: number; y: number }>; isLight: boolean }) {
   const mesh = useRef<THREE.Mesh>(null)
   const matRef = useRef<any>(null)
   const timeRef = useRef(0)
@@ -45,7 +46,7 @@ function CentralShape({ progressRef, mouseRef, isLight }: { progressRef: React.R
   useFrame((_, delta) => {
     if (!mesh.current) return
     timeRef.current += delta
-    const progress = progressRef.current
+    const progress = progressRef.smooth.current
     const mouse = mouseRef.current
     const eased = Math.min(progress / 0.2, 1)
     const targetY = 0.5 - progress * 2
@@ -80,7 +81,7 @@ function CentralShape({ progressRef, mouseRef, isLight }: { progressRef: React.R
   )
 }
 
-function OrbitingShapes({ progressRef, isLight }: { progressRef: React.RefObject<number>; isLight: boolean }) {
+function OrbitingShapes({ progressRef, isLight }: { progressRef: { raw: React.RefObject<number>; smooth: React.RefObject<number> }; isLight: boolean }) {
   const group = useRef<THREE.Group>(null)
   const timeRef = useRef(0)
   const opacity = isLight ? 0.5 : 0.8
@@ -97,7 +98,7 @@ function OrbitingShapes({ progressRef, isLight }: { progressRef: React.RefObject
     if (!group.current) return
     timeRef.current += delta
     const t = timeRef.current
-    const progress = progressRef.current
+    const progress = progressRef.smooth.current
     const enabled = Math.min(Math.max((progress - 0.05) / 0.15, 0), 1)
     group.current.children.forEach((child, i) => {
       const c = configs[i]
@@ -131,7 +132,7 @@ function OrbitingShapes({ progressRef, isLight }: { progressRef: React.RefObject
   )
 }
 
-function ParticlesField({ progressRef, isLight }: { progressRef: React.RefObject<number>; isLight: boolean }) {
+function ParticlesField({ progressRef, isLight }: { progressRef: { raw: React.RefObject<number>; smooth: React.RefObject<number> }; isLight: boolean }) {
   const ref = useRef<THREE.Points>(null)
   const timeRef = useRef(0)
   const count = 2000
@@ -159,7 +160,7 @@ function ParticlesField({ progressRef, isLight }: { progressRef: React.RefObject
     if (!ref.current) return
     timeRef.current += delta
     const t = timeRef.current
-    const progress = progressRef.current
+    const progress = progressRef.smooth.current
     ref.current.rotation.y = t * 0.02
     ref.current.rotation.x = Math.sin(t * 0.005) * 0.03
     const mat = ref.current.material as THREE.PointsMaterial
@@ -189,11 +190,11 @@ function ParticlesField({ progressRef, isLight }: { progressRef: React.RefObject
   )
 }
 
-function Grid({ progressRef, isLight }: { progressRef: React.RefObject<number>; isLight: boolean }) {
+function Grid({ progressRef, isLight }: { progressRef: { raw: React.RefObject<number>; smooth: React.RefObject<number> }; isLight: boolean }) {
   const ref = useRef<THREE.Group>(null)
   useFrame(() => {
     if (!ref.current) return
-    const progress = progressRef.current
+    const progress = progressRef.smooth.current
     const s = Math.max(0, 1 - progress * 3)
     ref.current.scale.setScalar(s)
     ref.current.position.y = -3 - progress * 2
@@ -207,9 +208,22 @@ function Grid({ progressRef, isLight }: { progressRef: React.RefObject<number>; 
   )
 }
 
-function Scene({ progressRef, mouseRef, fogColor, isLight }: { progressRef: React.RefObject<number>; mouseRef: React.RefObject<{ x: number; y: number }>; fogColor: string; isLight: boolean }) {
+function ProgressSmoother({ raw, smooth }: { raw: React.RefObject<number>; smooth: React.RefObject<number> }) {
+  useFrame((_, delta) => {
+    const diff = raw.current - smooth.current
+    if (Math.abs(diff) < 0.001) {
+      smooth.current = raw.current
+    } else {
+      smooth.current += diff * Math.min(1, delta * 4)
+    }
+  })
+  return null
+}
+
+function Scene({ progressRef, mouseRef, fogColor, isLight }: { progressRef: { raw: React.RefObject<number>; smooth: React.RefObject<number> }; mouseRef: React.RefObject<{ x: number; y: number }>; fogColor: string; isLight: boolean }) {
   return (
     <>
+      <ProgressSmoother raw={progressRef.raw} smooth={progressRef.smooth} />
       <ambientLight intensity={0.3} />
       <pointLight position={[10, 10, 10]} intensity={isLight ? 1.5 : 2} color="#7c3aed" />
       <pointLight position={[-10, -5, -10]} intensity={isLight ? 1.0 : 1.5} color="#22d3ee" />
