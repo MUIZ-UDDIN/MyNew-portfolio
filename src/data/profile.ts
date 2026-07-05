@@ -2,7 +2,7 @@ export const profile = {
   name: "Muiz Ud Din",
   title: "Data Scientist & Full-Stack AI Engineer",
   tagline: "Building Intelligent Systems That Scale",
-  heroSubtext: "I build and deploy end-to-end AI systems — from autonomous LLM agents and large-scale web scraping to full-stack web apps in React and Next.js. Frontend, backend, APIs, WebSockets, Docker, VPS, and Hostinger deployment. If the data is locked behind a site, I'll get it out and turn it into a working product. Top Rated on Upwork. 4+ years shipping what others call 'too complex.'",
+  heroSubtext: "I build and deploy end-to-end AI systems, from autonomous LLM agents and large-scale web scraping to full-stack web apps in React and Next.js. Frontend, backend, APIs, WebSockets, Docker, VPS, and Hostinger deployment. If the data is locked behind a site, I'll get it out and turn it into a working product. Top Rated on Upwork. 4+ years shipping what others call 'too complex.'",
   email: "muizdin143@outlook.com",
   location: "Gilgit, Pakistan",
   upwork: {
@@ -25,8 +25,8 @@ export const profile = {
     upwork: "https://www.upwork.com/freelancers/~muizuddin",
   },
   about: [
-    "I started with Python scripts and never stopped building. Today, I'm the engineer you call when the data is messy, the deadline is tight, and the problem hasn't been solved before. Whether it's scraping a site that fights back at scale, training a model on sparse data, deploying an LLM agent that follows instructions, or wiring up a full-stack app with real-time WebSockets — I figure it out and ship it. HTML to Next.js, REST to WebSockets, local to Docker on a VPS — I handle the whole stack.",
-    "Beyond the code, I'm a curious soul who speaks three languages, loves a good challenge, and believes the best technology is invisible — it just makes people's lives easier. If it involves Python, web scraping, automation, AI, or deployment, I'm probably already building it."
+    "I started with Python scripts and never stopped building. Today, I'm the engineer you call when the data is messy, the deadline is tight, and the problem hasn't been solved before. Whether it's scraping a site that fights back at scale, training a model on sparse data, deploying an LLM agent that follows instructions, or wiring up a full-stack app with real-time WebSockets. I figure it out and ship it. HTML to Next.js, REST to WebSockets, local to Docker on a VPS, I handle the whole stack.",
+    "Beyond the code, I'm a curious soul who speaks three languages, loves a good challenge, and believes the best technology is invisible, it just makes people's lives easier. If it involves Python, web scraping, automation, AI, or deployment, I'm probably already building it."
   ]
 }
 

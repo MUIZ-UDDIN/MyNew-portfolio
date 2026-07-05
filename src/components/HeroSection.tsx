@@ -1,8 +1,8 @@
 "use client"
 
 import { motion, useScroll, useTransform } from "framer-motion"
-import { useRef } from "react"
-import { ArrowDown } from "lucide-react"
+import { useRef, useState } from "react"
+import { ArrowDown, ChevronDown } from "lucide-react"
 import { GithubIcon, UpworkIcon } from "@/lib/icons"
 import dynamic from "next/dynamic"
 import { ProfileImage } from "./ProfileImage"
@@ -13,6 +13,7 @@ const ThreeScene = dynamic(() => import("./ThreeScene").then((m) => ({ default: 
 })
 
 export function HeroSection() {
+  const [expanded, setExpanded] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] })
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
@@ -87,14 +88,31 @@ export function HeroSection() {
               {profile.title}
             </motion.h2>
 
-            <motion.p
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 1.2 }}
-              className="max-w-xl text-base sm:text-lg text-[var(--color-text-secondary)] leading-relaxed mb-8"
+              className="mb-8"
             >
-              {profile.tagline} &mdash; {profile.heroSubtext}
-            </motion.p>
+              <motion.p
+                layout
+                className={`max-w-xl text-base sm:text-lg text-[var(--color-text-secondary)] leading-relaxed ${!expanded ? "line-clamp-3" : ""}`}
+              >
+                {profile.tagline} &mdash; {profile.heroSubtext}
+              </motion.p>
+              <button
+                onClick={() => setExpanded(!expanded)}
+                className="cursor-pointer mt-1 inline-flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 transition-colors"
+              >
+                {expanded ? "Show less" : "Read more"}
+                <motion.span
+                  animate={{ rotate: expanded ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ChevronDown className="w-3 h-3" />
+                </motion.span>
+              </button>
+            </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 40 }}
