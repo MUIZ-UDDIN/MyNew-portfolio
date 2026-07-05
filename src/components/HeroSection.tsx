@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, useScroll, useTransform } from "framer-motion"
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import { ArrowDown, ChevronDown } from "lucide-react"
 import { GithubIcon, UpworkIcon } from "@/lib/icons"
 import dynamic from "next/dynamic"
@@ -14,10 +14,26 @@ const ThreeScene = dynamic(() => import("./ThreeScene").then((m) => ({ default: 
 
 export function HeroSection() {
   const [expanded, setExpanded] = useState(false)
+  const [collapsedH, setCollapsedH] = useState(80)
   const ref = useRef<HTMLDivElement>(null)
+  const textRef = useRef<HTMLParagraphElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] })
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
   const scale = useTransform(scrollYProgress, [0, 1], [1, 0.85])
+
+  useEffect(() => {
+    const measure = () => {
+      if (textRef.current) {
+        const s = getComputedStyle(textRef.current)
+        const fs = parseFloat(s.fontSize)
+        const lh = s.lineHeight === "normal" ? 1.625 : parseFloat(s.lineHeight)
+        setCollapsedH(Math.round(fs * lh * 3))
+      }
+    }
+    measure()
+    window.addEventListener("resize", measure)
+    return () => window.removeEventListener("resize", measure)
+  }, [])
 
   return (
     <section
@@ -94,9 +110,14 @@ export function HeroSection() {
               transition={{ duration: 1, delay: 1.2 }}
               className="mb-8"
             >
-              <p className={`max-w-xl text-base sm:text-lg text-[var(--color-text-secondary)] leading-relaxed ${!expanded ? "line-clamp-3" : ""}`}>
-                {profile.tagline}, {profile.heroSubtext}
-              </p>
+              <div
+                className="overflow-hidden transition-[max-height] duration-500 ease-in-out"
+                style={{ maxHeight: expanded ? 500 : collapsedH }}
+              >
+                <p ref={textRef} className="max-w-xl text-base sm:text-lg text-[var(--color-text-secondary)] leading-relaxed">
+                  {profile.tagline}, {profile.heroSubtext}
+                </p>
+              </div>
               <button
                 onClick={() => setExpanded(!expanded)}
                 className="cursor-pointer mt-1 inline-flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 transition-colors"
