@@ -4,25 +4,25 @@ import { createContext, useContext, useEffect, useState } from "react"
 
 type Theme = "dark" | "light"
 
-function getInitialTheme(): Theme {
-  if (typeof document !== "undefined") {
-    const attr = document.documentElement.getAttribute("data-theme")
-    if (attr === "light" || attr === "dark") return attr
-  }
-  return "dark"
-}
-
 const ThemeContext = createContext({
   theme: "dark" as Theme,
   toggleTheme: () => {},
 })
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(getInitialTheme)
+  const [theme, setTheme] = useState<Theme>("dark")
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme)
-    localStorage.setItem("theme", theme)
+    const fromAttr = document.documentElement.getAttribute("data-theme") as Theme | null
+    if (fromAttr && fromAttr !== theme) setTheme(fromAttr)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const current = document.documentElement.getAttribute("data-theme")
+    if (current !== theme) {
+      document.documentElement.setAttribute("data-theme", theme)
+      localStorage.setItem("theme", theme)
+    }
   }, [theme])
 
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"))
