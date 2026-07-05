@@ -197,10 +197,19 @@ function SceneUpdater({ isLight }: { isLight: boolean }) {
   return null
 }
 
+function SceneBackground({ color }: { color: string }) {
+  const { scene } = useThree()
+  useEffect(() => {
+    scene.background = new THREE.Color(color)
+  }, [scene, color])
+  return null
+}
+
 function Scene({ progress, mouse, fogColor, isLight }: { progress: number; mouse: { x: number; y: number }; fogColor: string; isLight: boolean }) {
   return (
     <>
       <SceneUpdater isLight={isLight} />
+      <SceneBackground color={fogColor} />
       <ambientLight intensity={0.3} />
       <pointLight position={[10, 10, 10]} intensity={isLight ? 1.5 : 2} color="#7c3aed" />
       <pointLight position={[-10, -5, -10]} intensity={isLight ? 1.0 : 1.5} color="#22d3ee" />
@@ -245,7 +254,7 @@ export function ThreeScene({ noPost }: { noPost?: boolean }) {
     toneMappingExposure: 1.0,
   }), [])
 
-  const dpr = useMemo(() => [1, 1.5] as [number, number], [])
+  const dpr = useMemo(() => [1, 2] as [number, number], [])
 
   return (
     <div className="absolute inset-0 w-full h-full">
@@ -253,6 +262,7 @@ export function ThreeScene({ noPost }: { noPost?: boolean }) {
         camera={{ position: [0, 0, 8], fov: 55 }}
         dpr={dpr}
         gl={glConfig}
+        resize={undefined}
       >
         <Scene progress={progress} mouse={mouse} fogColor={fogColor} isLight={isLight} />
         {!noPost && (
