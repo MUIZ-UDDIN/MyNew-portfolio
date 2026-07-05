@@ -7,37 +7,46 @@ import { EffectComposer, Bloom } from "@react-three/postprocessing"
 import * as THREE from "three"
 import { useTheme } from "@/lib/ThemeContext"
 
-function useScrollProgress() {
-  const [progress, setProgress] = useState(0)
+function useScrollProgressRef() {
+  const ref = useRef(0)
   useEffect(() => {
     const onScroll = () => {
       const h = document.documentElement.scrollHeight - window.innerHeight
-      setProgress(Math.min(window.scrollY / h, 1))
+      ref.current = Math.min(window.scrollY / h, 1)
     }
-    window.addEventListener("scroll", onScroll)
+    window.addEventListener("scroll", onScroll, { passive: true })
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
-  return progress
+  return ref
 }
 
-function useMousePosition() {
-  const [pos, setPos] = useState({ x: 0, y: 0 })
+function useMousePositionRef() {
+  const ref = useRef({ x: 0, y: 0 })
   useEffect(() => {
-    const onMove = (e: MouseEvent) => setPos({ x: (e.clientX / window.innerWidth - 0.5) * 2, y: (e.clientY / window.innerHeight - 0.5) * -2 })
-    window.addEventListener("mousemove", onMove)
+    const onMove = (e: MouseEvent) => {
+      ref.current = { x: (e.clientX / window.innerWidth - 0.5) * 2, y: (e.clientY / window.innerHeight - 0.5) * -2 }
+    }
+    window.addEventListener("mousemove", onMove, { passive: true })
     return () => window.removeEventListener("mousemove", onMove)
   }, [])
-  return pos
+  return ref
 }
 
-function CentralShape({ progress, mouse, isLight }: { progress: number; mouse: { x: number; y: number }; isLight: boolean }) {
+function CentralShape({ progressRef, mouseRef, isLight }: { progressRef: React.RefObject<number>; mouseRef: React.RefObject<{ x: number; y: number }>; isLight: boolean }) {
   const mesh = useRef<THREE.Mesh>(null)
+  const matRef = useRef<any>(null)
   const timeRef = useRef(0)
-  const opacity = isLight ? 0.6 : 1
+  const palette = useMemo(() => [
+    new THREE.Color("#7c3aed"),
+    new THREE.Color("#22d3ee"),
+    new THREE.Color("#a78bfa"),
+  ], [])
 
   useFrame((_, delta) => {
     if (!mesh.current) return
     timeRef.current += delta
+    const progress = progressRef.current
+    const mouse = mouseRef.current
     const eased = Math.min(progress / 0.2, 1)
     const targetY = 0.5 - progress * 2
     mesh.current.position.x += (mouse.x * 0.6 - mesh.current.position.x) * 0.03
@@ -45,27 +54,33 @@ function CentralShape({ progress, mouse, isLight }: { progress: number; mouse: {
     mesh.current.rotation.x = timeRef.current * 0.15 + mouse.y * 0.1
     mesh.current.rotation.y = timeRef.current * 0.2 + mouse.x * 0.1
     mesh.current.scale.setScalar(0.5 + eased * 0.3)
+
+    if (matRef.current) {
+      const idx = progress < 0.3 ? 0 : progress < 0.6 ? 1 : 2
+      matRef.current.color.copy(palette[idx])
+      matRef.current.emissive.copy(palette[idx])
+      matRef.current.emissiveIntensity = (0.2 + progress * 0.4) * (isLight ? 0.3 : 1)
+      matRef.current.opacity = isLight ? 0.6 : 1
+      matRef.current.distort = 0.15 + 0.1 * Math.sin(timeRef.current * 0.5)
+    }
   })
 
   return (
     <mesh ref={mesh} position={[0, 0.5, 0]} scale={0.5}>
       <torusKnotGeometry args={[1.2, 0.35, 180, 24]} />
       <MeshDistortMaterial
-        color={progress < 0.3 ? "#7c3aed" : progress < 0.6 ? "#22d3ee" : "#a78bfa"}
-        emissive={progress < 0.3 ? "#7c3aed" : progress < 0.6 ? "#22d3ee" : "#a78bfa"}
-        emissiveIntensity={(0.2 + progress * 0.4) * (isLight ? 0.3 : 1)}
+        ref={matRef}
         roughness={0.15}
         metalness={0.9}
-        distort={0.15 + 0.1 * Math.sin(timeRef.current * 0.5)}
         speed={2}
         transparent
-        opacity={opacity}
+        opacity={isLight ? 0.6 : 1}
       />
     </mesh>
   )
 }
 
-function OrbitingShapes({ progress, isLight }: { progress: number; isLight: boolean }) {
+function OrbitingShapes({ progressRef, isLight }: { progressRef: React.RefObject<number>; isLight: boolean }) {
   const group = useRef<THREE.Group>(null)
   const timeRef = useRef(0)
   const opacity = isLight ? 0.5 : 0.8
@@ -82,6 +97,7 @@ function OrbitingShapes({ progress, isLight }: { progress: number; isLight: bool
     if (!group.current) return
     timeRef.current += delta
     const t = timeRef.current
+    const progress = progressRef.current
     const enabled = Math.min(Math.max((progress - 0.05) / 0.15, 0), 1)
     group.current.children.forEach((child, i) => {
       const c = configs[i]
@@ -115,7 +131,7 @@ function OrbitingShapes({ progress, isLight }: { progress: number; isLight: bool
   )
 }
 
-function ParticlesField({ progress, isLight }: { progress: number; isLight: boolean }) {
+function ParticlesField({ progressRef, isLight }: { progressRef: React.RefObject<number>; isLight: boolean }) {
   const ref = useRef<THREE.Points>(null)
   const timeRef = useRef(0)
   const count = 2000
@@ -143,6 +159,7 @@ function ParticlesField({ progress, isLight }: { progress: number; isLight: bool
     if (!ref.current) return
     timeRef.current += delta
     const t = timeRef.current
+    const progress = progressRef.current
     ref.current.rotation.y = t * 0.02
     ref.current.rotation.x = Math.sin(t * 0.005) * 0.03
     const mat = ref.current.material as THREE.PointsMaterial
@@ -172,10 +189,11 @@ function ParticlesField({ progress, isLight }: { progress: number; isLight: bool
   )
 }
 
-function Grid({ progress, isLight }: { progress: number; isLight: boolean }) {
+function Grid({ progressRef, isLight }: { progressRef: React.RefObject<number>; isLight: boolean }) {
   const ref = useRef<THREE.Group>(null)
   useFrame(() => {
     if (!ref.current) return
+    const progress = progressRef.current
     const s = Math.max(0, 1 - progress * 3)
     ref.current.scale.setScalar(s)
     ref.current.position.y = -3 - progress * 2
@@ -189,7 +207,7 @@ function Grid({ progress, isLight }: { progress: number; isLight: boolean }) {
   )
 }
 
-function Scene({ progress, mouse, fogColor, isLight }: { progress: number; mouse: { x: number; y: number }; fogColor: string; isLight: boolean }) {
+function Scene({ progressRef, mouseRef, fogColor, isLight }: { progressRef: React.RefObject<number>; mouseRef: React.RefObject<{ x: number; y: number }>; fogColor: string; isLight: boolean }) {
   return (
     <>
       <ambientLight intensity={0.3} />
@@ -197,17 +215,17 @@ function Scene({ progress, mouse, fogColor, isLight }: { progress: number; mouse
       <pointLight position={[-10, -5, -10]} intensity={isLight ? 1.0 : 1.5} color="#22d3ee" />
       <pointLight position={[0, -10, 5]} intensity={isLight ? 0.8 : 0.8} color="#a78bfa" />
       <fog attach="fog" args={[fogColor, isLight ? 6 : 8, isLight ? 14 : 18]} />
-      <CentralShape progress={progress} mouse={mouse} isLight={isLight} />
-      <OrbitingShapes progress={progress} isLight={isLight} />
-      <ParticlesField progress={progress} isLight={isLight} />
-      <Grid progress={progress} isLight={isLight} />
+      <CentralShape progressRef={progressRef} mouseRef={mouseRef} isLight={isLight} />
+      <OrbitingShapes progressRef={progressRef} isLight={isLight} />
+      <ParticlesField progressRef={progressRef} isLight={isLight} />
+      <Grid progressRef={progressRef} isLight={isLight} />
     </>
   )
 }
 
 export function ThreeScene({ noPost }: { noPost?: boolean }) {
-  const progress = useScrollProgress()
-  const mouse = useMousePosition()
+  const progressRef = useScrollProgressRef()
+  const mouseRef = useMousePositionRef()
   const { theme } = useTheme()
   const isLight = theme === "light"
   const [fogColor, setFogColor] = useState(isLight ? "#eceef2" : "#0a0a0f")
@@ -241,7 +259,7 @@ export function ThreeScene({ noPost }: { noPost?: boolean }) {
           toneMappingExposure: isLight ? 1.0 : 1.2,
         }}
       >
-        <Scene progress={progress} mouse={mouse} fogColor={fogColor} isLight={isLight} />
+        <Scene progressRef={progressRef} mouseRef={mouseRef} fogColor={fogColor} isLight={isLight} />
         {!noPost && (
           <EffectComposer>
             <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.6} intensity={isLight ? 0.5 : 0.8} mipmapBlur />
