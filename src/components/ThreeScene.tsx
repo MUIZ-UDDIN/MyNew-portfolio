@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useMemo, useState, useEffect, useCallback } from "react"
+import { useRef, useMemo, useState, useEffect } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { MeshDistortMaterial } from "@react-three/drei"
 import { EffectComposer, Bloom } from "@react-three/postprocessing"
@@ -189,9 +189,18 @@ function Grid({ progress, isLight }: { progress: number; isLight: boolean }) {
   )
 }
 
+function SceneUpdater({ isLight }: { isLight: boolean }) {
+  const { gl } = useThree()
+  useEffect(() => {
+    gl.toneMappingExposure = isLight ? 1.0 : 1.2
+  }, [gl, isLight])
+  return null
+}
+
 function Scene({ progress, mouse, fogColor, isLight }: { progress: number; mouse: { x: number; y: number }; fogColor: string; isLight: boolean }) {
   return (
     <>
+      <SceneUpdater isLight={isLight} />
       <ambientLight intensity={0.3} />
       <pointLight position={[10, 10, 10]} intensity={isLight ? 1.5 : 2} color="#7c3aed" />
       <pointLight position={[-10, -5, -10]} intensity={isLight ? 1.0 : 1.5} color="#22d3ee" />
@@ -228,18 +237,22 @@ export function ThreeScene({ noPost }: { noPost?: boolean }) {
     return () => { console.warn = orig }
   }, [])
 
+  const glConfig = useMemo(() => ({
+    antialias: true,
+    alpha: true,
+    powerPreference: "high-performance",
+    toneMapping: THREE.ACESFilmicToneMapping,
+    toneMappingExposure: 1.0,
+  }), [])
+
+  const dpr = useMemo(() => [1, 1.5] as [number, number], [])
+
   return (
     <div className="absolute inset-0 w-full h-full">
       <Canvas
         camera={{ position: [0, 0, 8], fov: 55 }}
-        dpr={[1, 1.5]}
-        gl={{
-          antialias: true,
-          alpha: true,
-          powerPreference: "high-performance",
-          toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: isLight ? 1.0 : 1.2,
-        }}
+        dpr={dpr}
+        gl={glConfig}
       >
         <Scene progress={progress} mouse={mouse} fogColor={fogColor} isLight={isLight} />
         {!noPost && (
