@@ -7,6 +7,16 @@ import { EffectComposer, Bloom } from "@react-three/postprocessing"
 import * as THREE from "three"
 import { useTheme } from "@/lib/ThemeContext"
 
+const warn = console.warn
+console.warn = (...args: unknown[]) => {
+  if (
+    typeof args[0] === "string" &&
+    args[0].startsWith("THREE.Clock: This module has been deprecated")
+  )
+    return
+  warn.apply(console, args)
+}
+
 function useScrollProgressRef() {
   const raw = useRef(0)
   const smooth = useRef(0)
@@ -251,16 +261,6 @@ export function ThreeScene({ noPost }: { noPost?: boolean }) {
     const bg = computed.getPropertyValue("--color-bg").trim()
     setFogColor(bg || (isLight ? "#eceef2" : "#0a0a0f"))
   }, [theme, isLight])
-
-  useEffect(() => {
-    const orig = console.warn
-    const msg = "THREE.Clock: .getElapsedTime() is deprecated"
-    console.warn = (...args: unknown[]) => {
-      if (typeof args[0] === "string" && args[0] === msg) return
-      return orig.apply(console, args)
-    }
-    return () => { console.warn = orig }
-  }, [])
 
   return (
     <div className="absolute inset-0 w-full h-full">

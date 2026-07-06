@@ -1,0 +1,108 @@
+## The Problem
+
+A client needed to extract product data from 50+ e-commerce websites daily — prices, availability, descriptions, and images. Traditional scrapers broke the moment a site changed its HTML structure. Maintenance was a nightmare.
+
+The solution? Use an LLM agent that can *understand* the page content and adapt to changes automatically.
+
+## Architecture
+
+```
+URL → Browser (Playwright) → Screenshot + HTML → LLM → Structured JSON
+```
+
+The agent:
+1. Navigates to the URL using Playwright (handles JavaScript-rendered content)
+2. Captures the page content as both HTML and a screenshot
+3. Sends the content to an LLM with a schema describing what to extract
+4. Returns structured JSON
+
+## The Agent Loop
+
+```python
+from playwright.async_api import async_playwright
+from openai import AsyncOpenAI
+import json
+
+client = AsyncOpenAI()
+
+EXTRACTION_SCHEMA = {
+    "product_name": "string",
+    "price": "string",
+    "currency": "string",
+    "availability": "in_stock | out_of_stock | pre_order",
+    "description": "string",
+    "images": ["string"],
+}
+
+SYSTEM_PROMPT = f"""You are a data extraction agent.
+Extract the requested fields from the page content.
+Return ONLY valid JSON matching this schema: {json.dumps(EXTRACTION_SCHEMA)}
+If a field is not found, use null."""
+
+async def extract(url: str) -> dict:
+    async with async_playwright() as p:
+        browser = await p.chromium.launch()
+        page = await browser.new_page()
+        await page.goto(url, wait_until="networkidle")
+        content = await page.content()
+        await browser.close()
+
+    response = await client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": f"URL: {url}\n\nHTML:\n{content[:8000]}"},
+        ],
+        response_format={"type": "json_object"},
+    )
+
+    return json.loads(response.choices[0].message.content)
+```
+
+## Handling Anti-Bot Measures
+
+Many sites block traditional scrapers. The agent handles these with:
+
+### 1. Browser Fingerprinting
+
+```python
+await page.context.add_init_script("""
+    Object.defineProperty(navigator, 'webdriver', { get: () => false });
+    Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3] });
+""")
+```
+
+### 2. Human-like Behavior
+
+```python
+import asyncio
+import random
+
+async def human_delay(page):
+    delay = random.uniform(0.5, 2.0)
+    await asyncio.sleep(delay)
+    # Random scroll
+    await page.evaluate(f"window.scrollTo(0, {random.randint(100, 500)})")
+    await asyncio.sleep(random.uniform(0.3, 1.0))
+```
+
+### 3. CAPTCHA Handling
+
+For sites with CAPTCHAs, the agent sends a screenshot to a vision-capable LLM along with the HTML. The model can read CAPTCHAs and solve text-based ones with ~80% accuracy.
+
+## Results
+
+| Metric | Before (Traditional) | After (LLM Agent) |
+|--------|---------------------|-------------------|
+| Maintenance time | 10 hrs/week | 1 hr/week |
+| Success rate | 65% | 92% |
+| Sites supported | 12 | 50+ |
+| Time to add new site | 4 hrs | 15 min |
+
+## Lessons Learned
+
+1. **LLMs are surprisingly good at structured extraction** — even from messy HTML
+2. **Screenshots help** — sending both text and visual context improves accuracy
+3. **Rate limiting is the bottleneck** — not the model, but the websites
+4. **Error recovery matters** — implement retries with exponential backoff
+5. **Cache aggressively** — don't re-extract data that hasn't changed

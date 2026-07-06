@@ -57,6 +57,9 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://muizuddin.com"),
   alternates: {
     canonical: "https://muizuddin.com",
+    types: {
+      "application/rss+xml": "https://muizuddin.com/rss.xml",
+    },
   },
   appleWebApp: { title: "Muiz Ud Din" },
   applicationName: "Muiz Ud Din Portfolio",
@@ -112,6 +115,8 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
       data-theme="dark"
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
     >
       <head>
         <meta name="google-site-verification" content="RiMAN2I_sldZAiR-3vjSp7G_v0nMMHTqZfoxYWTfVVU" />
@@ -119,6 +124,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://muizuddin.com" />
         <link rel="dns-prefetch" href="https://muizuddin.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="alternate" type="application/rss+xml" title="Muiz Ud Din — Insights" href="https://muizuddin.com/rss.xml" />
         <script
           dangerouslySetInnerHTML={{
             __html: `try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}`,
@@ -173,8 +179,8 @@ export default function RootLayout({
           <CursorGlow />
           <Header />
           <main className="flex-1 relative z-10">{children}</main>
-          <Analytics />
-          <SpeedInsights />
+          <Analytics debug={false} />
+          <SpeedInsights debug={false} />
           <Footer />
         </ThemeProvider>
       </body>

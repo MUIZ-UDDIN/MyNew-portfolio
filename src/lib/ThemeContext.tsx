@@ -13,9 +13,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>("dark")
 
   useEffect(() => {
-    const fromAttr = document.documentElement.getAttribute("data-theme") as Theme | null
-    if (fromAttr && fromAttr !== theme) setTheme(fromAttr)
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    const attr = document.documentElement.getAttribute("data-theme") as Theme | null
+    if (attr === "light" || attr === "dark") setTheme(attr)
+  }, [])
 
   useEffect(() => {
     const current = document.documentElement.getAttribute("data-theme")

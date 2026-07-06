@@ -19,13 +19,19 @@ export function Footer() {
           <div>
             <h3 className="text-sm font-semibold text-[var(--color-text)] mb-4">Quick Links</h3>
             <div className="flex flex-col gap-2 items-center md:items-start">
-              {["About", "Skills", "Projects", "Contact"].map((link) => (
+              {[
+                { label: "About", href: "/#about" },
+                { label: "Skills", href: "/#skills" },
+                { label: "Projects", href: "/#projects" },
+                { label: "Insights", href: "/blog" },
+                { label: "Contact", href: "/#contact" },
+              ].map((link) => (
                 <a
-                  key={link}
-                  href={`#${link.toLowerCase()}`}
+                  key={link.label}
+                  href={link.href}
                   className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:translate-x-1 transition-all duration-300"
                 >
-                  {link}
+                  {link.label}
                 </a>
               ))}
             </div>
