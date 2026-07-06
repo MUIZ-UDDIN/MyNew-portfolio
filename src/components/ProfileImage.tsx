@@ -81,7 +81,7 @@ export function ProfileImage() {
           </div>
         ) : (
           <div className="w-full h-full rounded-2xl overflow-hidden" style={{ position: 'relative', background: 'var(--color-bg-card)' }}>
-            <div className="w-full h-full" style={{ transform: 'scale(1.12)', position: 'relative' }}>
+            <div className="w-full h-full relative">
               <Image
                 src="/ProfileBG.png"
                 alt="Muiz Ud Din"
