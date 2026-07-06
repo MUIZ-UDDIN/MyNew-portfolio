@@ -1,108 +1,162 @@
-## The Problem
+## The Client & The Problem
 
-A client needed to extract product data from 50+ e-commerce websites daily — prices, availability, descriptions, and images. Traditional scrapers broke the moment a site changed its HTML structure. Maintenance was a nightmare.
+A client named Karol came to me with a tricky automation project. He needed to:
 
-The solution? Use an LLM agent that can *understand* the page content and adapt to changes automatically.
+1. **Scrape XP and level data** from the Steam web application
+2. **Auto-launch CS2** and navigate to the main menu
+3. **Open CS2 into Deathmatch** mode automatically
+4. **Scrape data from the Steam web app** alongside the game client
 
-## Architecture
+The challenge wasn't just the automation — it was managing **Steam session cookies**, coordinating across **5 different machines**, and keeping everything secure.
 
-```
-URL → Browser (Playwright) → Screenshot + HTML → LLM → Structured JSON
-```
+## Why Selenium Over Playwright
 
-The agent:
-1. Navigates to the URL using Playwright (handles JavaScript-rendered content)
-2. Captures the page content as both HTML and a screenshot
-3. Sends the content to an LLM with a schema describing what to extract
-4. Returns structured JSON
-
-## The Agent Loop
+I chose Selenium over Playwright for this project. The main reason: **security**. Steam's authentication is sensitive — login credentials, session cookies, and game access all needed to be handled carefully. Selenium's more mature ecosystem gave me better control over the browser profile, cookie storage, and session persistence.
 
 ```python
-from playwright.async_api import async_playwright
-from openai import AsyncOpenAI
-import json
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+import pickle
+import os
 
-client = AsyncOpenAI()
+COOKIE_FILE = "steam_cookies.pkl"
 
-EXTRACTION_SCHEMA = {
-    "product_name": "string",
-    "price": "string",
-    "currency": "string",
-    "availability": "in_stock | out_of_stock | pre_order",
-    "description": "string",
-    "images": ["string"],
-}
+def create_driver():
+    opts = Options()
+    opts.add_argument("--disable-blink-features=AutomationControlled")
+    opts.add_argument("--no-sandbox")
+    opts.add_argument("--disable-dev-shm-usage")
+    opts.add_experimental_option("excludeSwitches", ["enable-automation"])
+    opts.add_experimental_option("useAutomationExtension", False)
+    return webdriver.Chrome(options=opts)
+```
 
-SYSTEM_PROMPT = f"""You are a data extraction agent.
-Extract the requested fields from the page content.
-Return ONLY valid JSON matching this schema: {json.dumps(EXTRACTION_SCHEMA)}
-If a field is not found, use null."""
+## The Cookie Challenge
 
-async def extract(url: str) -> dict:
-    async with async_playwright() as p:
-        browser = await p.chromium.launch()
-        page = await browser.new_page()
-        await page.goto(url, wait_until="networkidle")
-        content = await page.content()
-        await browser.close()
+The biggest headache? **Steam cookies take a long time to expire** — but when they do, you can't do anything until you re-authenticate.
 
-    response = await client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": f"URL: {url}\n\nHTML:\n{content[:8000]}"},
-        ],
-        response_format={"type": "json_object"},
+Here's how I handled it:
+
+```python
+def load_or_login(driver, username, password):
+    if os.path.exists(COOKIE_FILE):
+        driver.get("https://steamcommunity.com")
+        with open(COOKIE_FILE, "rb") as f:
+            cookies = pickle.load(f)
+        for cookie in cookies:
+            driver.add_cookie(cookie)
+        driver.refresh()
+        # Check if login actually stuck
+        if "login" in driver.current_url:
+            return full_login(driver, username, password)
+        return True  # Cookies were valid
+    else:
+        return full_login(driver, username, password)
+
+def full_login(driver, username, password):
+    driver.get("https://steamcommunity.com/login/home")
+    # Fill credentials
+    driver.find_element(By.ID, "steamAccountName").send_keys(username)
+    driver.find_element(By.ID, "steamPassword").send_keys(password)
+    driver.find_element(By.ID, "loginBtn").click()
+    # Wait for redirect
+    WebDriverWait(driver, 30).until(
+        EC.url_changes("https://steamcommunity.com/login/home")
     )
-
-    return json.loads(response.choices[0].message.content)
+    # Save cookies for next time
+    with open(COOKIE_FILE, "wb") as f:
+        pickle.dump(driver.get_cookies(), f)
+    return True
 ```
 
-## Handling Anti-Bot Measures
+The system checks cookies at the start of every task:
+- **If valid** → skip login, open Steam directly
+- **If expired** → full login, store fresh cookies, overwrite the old file
 
-Many sites block traditional scrapers. The agent handles these with:
+Expired cookies are overwritten immediately — no stale files hanging around.
 
-### 1. Browser Fingerprinting
+## Multi-Machine Architecture
+
+This was the most complex part. The setup spanned 5 machines:
+
+| Machine | OS | Role |
+|---------|----|------|
+| PC | Windows | CS2 game + Steam client |
+| VM 1 | Linux | Backend API |
+| VM 2 | Linux | Frontend dashboard |
+| VM 3 | Linux | Database |
+| VM 4 | Linux | Worker tasks |
+
+The Windows PC was Karol's main machine where Steam and CS2 were installed. The backend on VM1 was built with **Python + FastAPI** — it handled all the logic: sending commands to launch the game, checking cookie expiry, and serving data to the dashboard. The frontend on VM2 was built with **React + Vite** for fast development and hot reloads, styled with **Tailwind CSS** for a clean, responsive UI. VM3 ran the database, and VM4 handled auxiliary scraping tasks.
+
+### Connecting Everything
+
+SSH keys handled authentication between machines. Docker containerized each service so deployment was consistent:
+
+```yaml
+# docker-compose.yml (simplified)
+services:
+  backend:
+    build: ./backend # FastAPI + Python
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=db
+      - SSH_KEY_PATH=/keys/id_rsa
+    volumes:
+      - ./keys:/keys
+      - ./cookies:/cookies
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:15
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+```
+
+### Remote Game Control
+
+The backend connected to the Windows PC via SSH to execute game commands:
 
 ```python
-await page.context.add_init_script("""
-    Object.defineProperty(navigator, 'webdriver', { get: () => false });
-    Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3] });
-""")
+import paramiko
+
+ssh = paramiko.SSHClient()
+ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ssh.connect("windows-pc-ip", username="karol", key_filename="/keys/id_rsa")
+
+# Launch CS2
+stdin, stdout, stderr = ssh.exec_command(
+    'start steam://rungameid/730'
+)
+
+# Wait for game window, then send keystrokes for Deathmatch
+# This was done via a helper script on the Windows machine
 ```
 
-### 2. Human-like Behavior
+## The Client Dashboard
 
-```python
-import asyncio
-import random
+Karol could manage everything from a web dashboard built with **React + Vite** and **Tailwind CSS** (chosen specifically for fast iteration — Vite's instant hot reload made UI tweaks painless):
 
-async def human_delay(page):
-    delay = random.uniform(0.5, 2.0)
-    await asyncio.sleep(delay)
-    # Random scroll
-    await page.evaluate(f"window.scrollTo(0, {random.randint(100, 500)})")
-    await asyncio.sleep(random.uniform(0.3, 1.0))
-```
+- View task status (running, completed, failed)
+- Monitor cookie expiry dates
+- See scraped XP/level data in real-time
+- Manually trigger tasks or schedule them
+- View logs from all 5 machines in one place
 
-### 3. CAPTCHA Handling
+## What I Learned
 
-For sites with CAPTCHAs, the agent sends a screenshot to a vision-capable LLM along with the HTML. The model can read CAPTCHAs and solve text-based ones with ~80% accuracy.
+1. **Cookie management is the silent killer** — Steam sessions last long but fail unpredictably. Always check before assuming.
+2. **Selenium is still the right choice for auth-heavy automation** — Playwright is great, but Selenium's cookie and profile handling is more battle-tested.
+3. **Multi-VM debugging is painful without centralized logging** — Set up log aggregation early, not after the first crash.
+4. **SSH + Docker is a powerful combo** — lightweight, secure, and works across Windows and Linux seamlessly.
+5. **Windows game automation from Linux is possible** — but requires careful SSH command construction and sometimes a helper agent on the Windows side.
 
-## Results
-
-| Metric | Before (Traditional) | After (LLM Agent) |
-|--------|---------------------|-------------------|
-| Maintenance time | 10 hrs/week | 1 hr/week |
-| Success rate | 65% | 92% |
-| Sites supported | 12 | 50+ |
-| Time to add new site | 4 hrs | 15 min |
-
-## Lessons Learned
-
-1. **LLMs are surprisingly good at structured extraction** — even from messy HTML
-2. **Screenshots help** — sending both text and visual context improves accuracy
-3. **Rate limiting is the bottleneck** — not the model, but the websites
-4. **Error recovery matters** — implement retries with exponential backoff
-5. **Cache aggressively** — don't re-extract data that hasn't changed
+This was one of those projects where the simple-sounding requirement ("automate CS2") turned into a distributed systems challenge. But getting it working — seeing the dashboard show live XP data scraped automatically from a game running on another machine — was worth every debugging session.

@@ -35,9 +35,7 @@ export async function generateMetadata({ params }: Props) {
 }
 
 const mdxModules: Record<string, () => Promise<{ default: React.ComponentType }>> = {
-  "building-rag-pipeline": () => import("@/../content/blog/building-rag-pipeline.mdx"),
   "automating-data-extraction": () => import("@/../content/blog/automating-data-extraction.mdx"),
-  "lessons-from-deploying-ml": () => import("@/../content/blog/lessons-from-deploying-ml.mdx"),
 }
 
 export default async function BlogPostPage({ params }: Props) {
