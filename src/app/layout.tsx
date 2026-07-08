@@ -157,6 +157,7 @@ export default function RootLayout({
                   "Automation",
                 ],
                 alumniOf: ["Karakarum International University", "GCCES"],
+                sameAs: ["https://www.upwork.com/freelancers/~muizuddin"],
               },
               {
                 "@context": "https://schema.org",
