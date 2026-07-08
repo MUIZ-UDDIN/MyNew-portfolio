@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: "Insights",
   description:
     "Thoughts on AI engineering, web scraping, LLM agents, MLOps, and building production systems. By Muiz Ud Din.",
+  alternates: {
+    canonical: "https://muizuddin.com/blog",
+  },
 }
 
 export default function BlogPage() {

@@ -20,12 +20,16 @@ export async function generateMetadata({ params }: Props) {
   return {
     title: post.title,
     description: post.excerpt,
+    alternates: {
+      canonical: `https://muizuddin.com/blog/${slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.excerpt,
       type: "article",
       publishedTime: post.date,
       tags: post.tags,
+      url: `https://muizuddin.com/blog/${slug}`,
     },
     twitter: {
       title: post.title,
