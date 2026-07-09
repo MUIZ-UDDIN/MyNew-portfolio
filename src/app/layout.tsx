@@ -73,10 +73,10 @@ export const metadata: Metadata = {
     url: "https://muizuddin.com",
     images: [
       {
-        url: "/og-image.png",
+        url: "https://muizuddin.com/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "Muiz Ud Din - Data Scientist & AI Engineer Portfolio",
+        alt: "Muiz Ud Din | Data Scientist & Full-Stack AI Engineer",
       },
     ],
   },
@@ -85,7 +85,7 @@ export const metadata: Metadata = {
     title: "Muiz Ud Din | Data Scientist & Full-Stack AI Engineer",
     description:
       "Top Rated Data Scientist and Full-Stack AI Engineer with 4+ years of experience. Specializing in Python automation, LLM Agents, RAG, web scraping, and Generative AI.",
-    images: ["/og-image.png"],
+    images: ["https://muizuddin.com/opengraph-image"],
     creator: "@muizuddin",
   },
   robots: {
@@ -101,7 +101,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/FaviconProfileBG.png",
-    apple: "/ProfileBG.png",
+    apple: "/ProfileBG2.webp",
   },
 }
 
