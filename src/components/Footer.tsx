@@ -1,5 +1,6 @@
-import { GithubIcon, UpworkIcon } from "@/lib/icons"
+import { GithubIcon, LinkedinIcon, UpworkIcon } from "@/lib/icons"
 import { MapPin } from "lucide-react"
+import { profile } from "@/data/profile"
 
 export function Footer() {
   return (
@@ -41,7 +42,7 @@ export function Footer() {
             <h3 className="text-sm font-semibold text-[var(--color-text)] mb-4">Connect</h3>
             <div className="flex flex-col gap-3 items-center md:items-start">
               <a
-                href="https://github.com/MUIZ-UDDIN"
+                href={profile.social.github}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:translate-x-1 transition-all duration-300"
@@ -50,7 +51,16 @@ export function Footer() {
                 GitHub
               </a>
               <a
-                href="https://www.upwork.com/freelancers/~muizuddin"
+                href={profile.social.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:translate-x-1 transition-all duration-300"
+              >
+                <LinkedinIcon className="w-4 h-4" />
+                LinkedIn
+              </a>
+              <a
+                href={profile.social.upwork}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:translate-x-1 transition-all duration-300"
