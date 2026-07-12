@@ -100,8 +100,8 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/FaviconProfileBG.png",
-    apple: "/ProfileBG2.webp",
+    icon: "/Img.png",
+    apple: "/Img.png",
   },
 }
 
