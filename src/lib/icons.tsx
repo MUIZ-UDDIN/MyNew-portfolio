@@ -1,7 +1,11 @@
-import { SiUpwork } from "react-icons/si"
+import { SiUpwork, SiFiverr } from "react-icons/si"
 
 export function UpworkIcon({ className }: { className?: string }) {
   return <SiUpwork className={className} />
+}
+
+export function FiverrIcon({ className }: { className?: string }) {
+  return <SiFiverr className={className} />
 }
 
 export function GithubIcon({ className }: { className?: string }) {

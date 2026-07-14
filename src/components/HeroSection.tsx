@@ -3,7 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion"
 import { useRef, useState } from "react"
 import { ArrowDown, ChevronDown } from "lucide-react"
-import { GithubIcon, LinkedinIcon, UpworkIcon } from "@/lib/icons"
+import { GithubIcon, LinkedinIcon, UpworkIcon, FiverrIcon } from "@/lib/icons"
 import dynamic from "next/dynamic"
 import { ProfileImage } from "./ProfileImage"
 import { profile } from "@/data/profile"
@@ -145,6 +145,7 @@ export function HeroSection() {
                 { Icon: GithubIcon, href: profile.social.github, label: "GitHub" },
                 { Icon: LinkedinIcon, href: profile.social.linkedin, label: "LinkedIn" },
                 { Icon: UpworkIcon, href: profile.social.upwork, label: "Upwork" },
+                { Icon: FiverrIcon, href: profile.social.fiverr, label: "Fiverr" },
               ].map(({ Icon, href, label }, i) => (
                 <motion.a
                   key={label}

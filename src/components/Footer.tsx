@@ -1,5 +1,5 @@
-import { GithubIcon, LinkedinIcon, UpworkIcon } from "@/lib/icons"
-import { MapPin } from "lucide-react"
+import { GithubIcon, LinkedinIcon, UpworkIcon, FiverrIcon } from "@/lib/icons"
+import { MapPin, Mail } from "lucide-react"
 import { profile } from "@/data/profile"
 
 export function Footer() {
@@ -67,6 +67,22 @@ export function Footer() {
               >
                 <UpworkIcon className="w-4 h-4" />
                 Upwork
+              </a>
+              <a
+                href={profile.social.fiverr}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:translate-x-1 transition-all duration-300"
+              >
+                <FiverrIcon className="w-4 h-4" />
+                Fiverr
+              </a>
+              <a
+                href="/#contact"
+                className="flex items-center gap-2 text-sm text-purple-400 hover:text-purple-300 hover:translate-x-1 transition-all duration-300 font-medium"
+              >
+                <Mail className="w-4 h-4" />
+                Work with me
               </a>
               <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
                 <MapPin className="w-4 h-4" />

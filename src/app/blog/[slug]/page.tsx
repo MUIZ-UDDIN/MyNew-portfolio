@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { CalendarDays, Clock, ArrowLeft, Tag } from "lucide-react"
+import { CalendarDays, Clock, ArrowLeft, Tag, Mail } from "lucide-react"
 import { posts } from "@/data/posts"
 import { PageTransition } from "@/components/PageTransition"
 import "highlight.js/styles/github-dark.css"
@@ -40,6 +40,7 @@ export async function generateMetadata({ params }: Props) {
 
 const mdxModules: Record<string, () => Promise<{ default: React.ComponentType }>> = {
   "automating-data-extraction": () => import("@/../content/blog/automating-data-extraction.mdx"),
+  "building-massive-sports-data-pipeline": () => import("@/../content/blog/building-massive-sports-data-pipeline.mdx"),
 }
 
 export default async function BlogPostPage({ params }: Props) {
@@ -98,13 +99,23 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
 
         <footer className="mt-16 pt-8 border-t border-[var(--color-border)]">
-          <Link
-            href="/blog"
-            className="inline-flex items-center gap-1.5 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors group"
-          >
-            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-            Back to Insights
-          </Link>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <Link
+              href="/blog"
+              className="inline-flex items-center gap-1.5 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors group"
+            >
+              <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+              Back to Insights
+            </Link>
+
+            <a
+              href="/#contact"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 text-white text-sm font-medium hover:shadow-lg hover:shadow-purple-500/25 hover:scale-105 transition-all duration-300"
+            >
+              <Mail className="w-4 h-4" />
+              Work with me
+            </a>
+          </div>
         </footer>
       </article>
     </div>

@@ -17,6 +17,15 @@ export const posts: PostMeta[] = [
     tags: ["Python", "FastAPI", "Selenium", "React", "Docker", "Automation", "Case Study"],
     readTime: "8 min read",
   },
+  {
+    slug: "building-massive-sports-data-pipeline",
+    title: "Building a 100K+ Sports Data Pipeline with Kimi 2.5, Gemini & Claude CLI",
+    date: "2026-07-14",
+    excerpt:
+      "How I built a massive sports dataset using Kimi 2.5's free NVIDIA API, verified with Google Gemini, researched with Claude CLI, and cached intelligently across 4000+ sports with retry logic.",
+    tags: ["Python", "Kimi 2.5", "Gemini", "Claude", "Data Pipeline", "Cache", "API", "Automation"],
+    readTime: "10 min read",
+  },
 ]
 
 export function getAllTags(): string[] {

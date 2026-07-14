@@ -1,0 +1,220 @@
+## The Project
+
+The goal was ambitious: build a structured dataset covering sports from around the world — including less popular and emerging ones — with detailed information about each sport's history, equipment, notable players, top countries, stadiums, and more. The final dataset would power multiple blog and website projects.
+
+The challenge? We needed **4000+ main sports entries** with comprehensive data for each, plus related entities that expanded the total to well over **100,000 data points**.
+
+## The Tech Stack
+
+We used three major AI models in this project, each for a specific role:
+
+| Model | Role |
+|-------|------|
+| **Kimi 2.5** (NVIDIA free API) | Primary data generation |
+| **Google Gemini** | Data verification |
+| **Claude CLI** (3 accounts API) | Research backup when Kimi hit limits |
+
+## Data Collection Strategy
+
+### Step 1: Collect Sports Names
+
+First, we gathered a list of sports names — focusing on less popular and less recognized sports. These are the ones that are harder to find structured data for but are valuable for niche content sites.
+
+### Step 2: Generate Sport Details
+
+For each sport, we generated:
+- When and where the sport was started/created
+- A detailed history written in an easy-to-understand way
+- Written so even a non-sports person could understand it
+
+```python
+import requests
+import json
+from typing import Optional
+
+KIMI_API_URL = "https://api.nvidia.com/v1/kimi/generate"
+
+def generate_sport_detail(sport_name: str) -> Optional[dict]:
+    prompt = f"""Provide detailed information about {sport_name}:
+1. Origin - when and where it was first played/created
+2. History - how it evolved over time (simple explanation)
+3. Basic rules - how the sport works (explain like I'm not a sports person)
+4. Key facts that make this sport unique
+
+Format as JSON with keys: origin, history, rules, unique_facts"""
+    
+    response = requests.post(
+        KIMI_API_URL,
+        headers={"Authorization": f"Bearer {API_KEY}"},
+        json={"prompt": prompt, "max_tokens": 2000}
+    )
+    
+    if response.status_code == 200:
+        return response.json()
+    return None
+```
+
+### Step 3: Equipment & Items
+
+Using the generated sport details, we identified equipment and items used to play each sport — from protective gear to specialized clothing.
+
+### Step 4: Emerging Companies
+
+For each sport, we selected less recognized and emerging companies that manufacture equipment or organize events. These companies were later contacted for partnerships and sponsorship opportunities.
+
+### Step 5: Top 10 Players
+
+We collected data on the top 10 deceased famous players for each sport:
+- Where they were born
+- Their records and achievements
+- A brief biography
+
+```python
+def generate_players_data(sport_name: str, sport_detail: dict) -> list[dict]:
+    prompt = f"""For the sport {sport_name}, list the top 10 deceased famous players.
+For each player provide: name, birth place, birth date, death date, key records,
+major achievements, and a brief biography paragraph.
+Return as a JSON array."""
+    
+    # Send to Kimi API and parse response
+    players = query_kimi(prompt)
+    
+    # Verify with Gemini
+    verified = verify_with_gemini(players, sport_name)
+    
+    return verified
+```
+
+## The Cache System
+
+With 4000+ sports and each requiring multiple API calls, we hit rate limits frequently. The solution was a **smart cache system**.
+
+```python
+import json
+import os
+from datetime import datetime
+
+CACHE_FILE = "sports_cache.json"
+
+class SportsCache:
+    def __init__(self):
+        self.cache = self._load()
+    
+    def _load(self) -> dict:
+        if os.path.exists(CACHE_FILE):
+            with open(CACHE_FILE, "r") as f:
+                return json.load(f)
+        return {"completed": [], "failed": [], "in_progress": []}
+    
+    def is_done(self, sport: str) -> bool:
+        return sport in self.cache["completed"]
+    
+    def mark_done(self, sport: str):
+        if sport not in self.cache["completed"]:
+            self.cache["completed"].append(sport)
+        self._save()
+    
+    def mark_failed(self, sport: str):
+        if sport not in self.cache["failed"]:
+            self.cache["failed"].append(sport)
+        self._save()
+    
+    def get_pending(self, sports: list[str]) -> list[str]:
+        return [s for s in sports 
+                if s not in self.cache["completed"] 
+                and s not in self.cache["in_progress"]]
+    
+    def _save(self):
+        with open(CACHE_FILE, "w") as f:
+            json.dump(self.cache, f, indent=2)
+```
+
+Without this cache, if a rate limit hit caused a sport's detail collection to fail, the API would need to check all 4000+ sports from the beginning to find what was left. With the cache, it instantly knew which sports were done, which failed, and which were in progress — enabling efficient **retry logic**.
+
+## Data Expansion
+
+From 4000+ main sports, the data expanded to:
+
+| Category | Count |
+|----------|-------|
+| Main sports | 4,000+ |
+| Equipment & items | 15,000+ |
+| Countries (most played) | 8,000+ |
+| Country details | 8,000+ |
+| Stadiums | 12,000+ |
+| Top 10 players per sport | 40,000+ |
+| Emerging companies | 4,000+ |
+| **Total** | **100,000+** |
+
+## Google Drive Integration
+
+The entire pipeline was connected directly to Google Drive. Python scripts pushed updates automatically:
+
+```python
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+
+def push_to_sheets(data: list[dict], sheet_name: str):
+    """Push verified data directly to Google Sheets"""
+    service = build("sheets", "v4", credentials=creds)
+    sheet = service.spreadsheets()
+    
+    # Convert data to rows
+    headers = list(data[0].keys())
+    rows = [headers] + [[row[h] for h in headers] for row in data]
+    
+    body = {"values": rows, "majorDimension": "ROWS"}
+    
+    result = sheet.values().update(
+        spreadsheetId=SPREADSHEET_ID,
+        range=f"{sheet_name}!A1",
+        valueInputOption="RAW",
+        body=body
+    ).execute()
+```
+
+## Verification Pipeline
+
+Data verification was a critical step. We used **Google Gemini** specifically for this — since it's Google-based, it had strong knowledge coverage for the sports domain.
+
+The workflow:
+1. Generate data with Kimi 2.5
+2. Store locally first
+3. Send to Gemini for verification
+4. If data is 100% authentic → push to Google Sheet
+5. If verification fails → flag for manual review or regenerate
+
+```python
+def verify_with_gemini(data: dict, sport: str) -> bool:
+    prompt = f"""Verify this data about {sport}. 
+Check if the facts are accurate based on your knowledge.
+Respond with only: VALID or INVALID with a brief reason.
+    
+Data: {json.dumps(data, indent=2)}"""
+    
+    response = gemini_model.generate_content(prompt)
+    result = response.text.strip()
+    
+    return result.startswith("VALID")
+```
+
+## Dealing with Rate Limits
+
+Kimi 2.5 was our primary engine, but when the daily limit hit, we didn't stop. We had **3 Claude CLI accounts** as API fallback for research and data generation.
+
+This multi-model approach meant the pipeline could run 24/7 without interruption:
+- **Default**: Kimi 2.5 (NVIDIA free API)
+- **When Kimi hits limit**: Claude CLI (3 accounts, rotated)
+- **Verification**: Google Gemini (always used for verification)
+
+## What I Learned
+
+1. **Cache is not optional at this scale** — Without it, retries would check every sport from scratch. The cache saved thousands of API calls.
+
+2. **Model specialization matters** — Using different models for generation vs. verification improved data quality significantly.
+
+3. **Google Drive as a datastore** — Direct Google Sheets integration made the data immediately accessible for the website/blog publishing pipeline.
+
+4. **Rate limit strategy** — Having backup API accounts (3 Claude accounts) kept the pipeline running even when the primary hit limits.
+
+5. **Local-then-push verification** — Never push unverified data. Store locally, verify, then push only when confident.

@@ -24,6 +24,7 @@ export const profile = {
     github: "https://github.com/MUIZ-UDDIN",
     linkedin: "https://www.linkedin.com/in/muiz-uddin",
     upwork: "https://www.upwork.com/freelancers/~muizuddin",
+    fiverr: "https://www.fiverr.com/sellers/muiz_uddin",
   },
   about: [
     "I started with Python scripts and never stopped building. Today, I'm the engineer you call when the data is messy, the deadline is tight, and the problem hasn't been solved before. Whether it's scraping a site that fights back at scale, training a model on sparse data, deploying an LLM agent that follows instructions, or wiring up a full-stack app with real-time WebSockets. I figure it out and ship it. HTML to Next.js, REST to WebSockets, local to Docker on a VPS, I handle the whole stack.",
