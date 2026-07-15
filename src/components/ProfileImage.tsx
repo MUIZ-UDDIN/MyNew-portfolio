@@ -83,7 +83,7 @@ export function ProfileImage() {
           <div className="w-full h-full rounded-2xl overflow-hidden" style={{ position: 'relative', background: 'var(--color-bg-card)' }}>
             <div className="w-full h-full relative">
               <Image
-                src="/img.png"
+                src="/Img.webp"
                 alt="Muiz Ud Din"
                 fill
                 className="object-cover"

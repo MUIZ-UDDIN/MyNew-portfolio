@@ -73,9 +73,9 @@ export const metadata: Metadata = {
     url: "https://muizuddin.com",
     images: [
       {
-        url: "https://muizuddin.com/opengraph-image",
-        width: 1200,
-        height: 630,
+        url: "https://muizuddin.com/Img.webp",
+        width: 800,
+        height: 800,
         alt: "Muiz Ud Din | Data Scientist & Full-Stack AI Engineer",
       },
     ],
@@ -85,7 +85,7 @@ export const metadata: Metadata = {
     title: "Muiz Ud Din | Data Scientist & Full-Stack AI Engineer",
     description:
       "Top Rated Data Scientist and Full-Stack AI Engineer with 4+ years of experience. Specializing in Python automation, LLM Agents, RAG, web scraping, and Generative AI.",
-    images: ["https://muizuddin.com/opengraph-image"],
+    images: ["https://muizuddin.com/Img.webp"],
     creator: "@muizuddin",
   },
   robots: {
@@ -100,8 +100,8 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/Img.png",
-    apple: "/Img.png",
+    icon: "/favicon.webp",
+    apple: "/Img.webp",
   },
 }
 
@@ -139,6 +139,7 @@ export default function RootLayout({
                 "@type": "Person",
                 name: "Muiz Ud Din",
                 url: "https://muizuddin.com",
+                image: "https://muizuddin.com/Img.webp",
                 jobTitle: "Data Scientist & Full-Stack AI Engineer",
                 knowsAbout: [
                   "Machine Learning",
@@ -157,7 +158,11 @@ export default function RootLayout({
                   "Automation",
                 ],
                 alumniOf: ["Karakarum International University", "GCCES"],
-                sameAs: ["https://www.upwork.com/freelancers/~muizuddin"],
+                sameAs: [
+                  "https://github.com/MUIZ-UDDIN",
+                  "https://www.upwork.com/freelancers/~muizuddin",
+                  "https://www.fiverr.com/sellers/muiz_uddin",
+                ],
               },
               {
                 "@context": "https://schema.org",
