@@ -8,6 +8,7 @@ import { Header } from "@/components/Header"
 import { Footer } from "@/components/Footer"
 import { ProgressBar } from "@/components/ProgressBar"
 import { CursorGlow } from "@/components/CursorGlow"
+import { FaqChat } from "@/components/FaqChat"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -188,6 +189,7 @@ export default function RootLayout({
           <Analytics debug={false} />
           <SpeedInsights debug={false} />
           <Footer />
+          <FaqChat />
         </ThemeProvider>
       </body>
     </html>
