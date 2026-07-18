@@ -1,0 +1,173 @@
+## The Project
+
+[CogniFlow](https://github.com/MUIZ-UDDIN/CogniFlow) is a next-generation Retrieval-Augmented Generation (RAG) platform that transforms static documents into a dynamic, searchable, and chat-capable knowledge base. Drop a PDF in, and the AI "learns" it automatically — no server restart, no manual indexing.
+
+The core idea: instead of searching through folders of PDFs manually, you upload documents to a watched directory, and CogniFlow ingests, chunks, embeds, and indexes them into a vector database. Then you can ask questions in natural language and get answers with citations.
+
+## Key Features
+
+### Real-Time Streaming AI
+
+Leverages WebSockets with Groq-powered reasoning (LLaMA 3.3) to stream answers word-by-word. No waiting for the full response — answers appear as they're generated, creating an elite chat experience.
+
+### Semantic Vector Vault
+
+Built on **ChromaDB**, the system uses mathematical embeddings to find relevant context in milliseconds. This goes far beyond keyword search — it understands the semantic meaning of your question and finds conceptually related content.
+
+```python
+import chromadb
+from chromadb.utils import embedding_functions
+
+client = chromadb.PersistentClient(path="./chroma_db")
+collection = client.get_or_create_collection(
+    name="documents",
+    embedding_function=embedding_functions.DefaultEmbeddingFunction()
+)
+
+def search_documents(query: str, n_results: int = 5):
+    results = collection.query(
+        query_texts=[query],
+        n_results=n_results
+    )
+    return results["documents"][0], results["metadatas"][0]
+```
+
+### Autonomous File Watcher
+
+A background **multithreaded watcher** monitors your local directory using the Watchdog library. Drop a new PDF in, and the AI ingests it automatically:
+
+```python
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+
+class PDFHandler(FileSystemEventHandler):
+    def on_created(self, event):
+        if event.src_path.endswith(".pdf"):
+            chunks = extract_and_chunk(event.src_path)
+            embeddings = generate_embeddings(chunks)
+            store_in_chromadb(embeddings, chunks, event.src_path)
+
+observer = Observer()
+observer.schedule(PDFHandler(), path="./documents", recursive=False)
+observer.start()
+```
+
+### Targeted Context Search
+
+Users can chat with their entire document library or "lock" the AI to a specific document for high-precision analysis. This is critical for scenarios like legal document review, academic research, or technical documentation where you need answers from a single source.
+
+### Advanced Document Ingestion
+
+Custom-built ingestion engine that handles:
+
+- **PDF Extraction** — Using PyMuPDF (fitz) to extract text while preserving structure
+- **Recursive Chunking** — Documents are split into chunks at natural boundaries (paragraphs, sections)
+- **Overlapping Sliding Windows** — Each chunk overlaps with its neighbors to preserve semantic context across chunk boundaries
+
+```python
+import fitz  # PyMuPDF
+
+def chunk_document(filepath: str, chunk_size: int = 500, overlap: int = 50):
+    doc = fitz.open(filepath)
+    text = ""
+    for page in doc:
+        text += page.get_text()
+    
+    chunks = []
+    start = 0
+    while start < len(text):
+        end = start + chunk_size
+        chunks.append(text[start:end])
+        start = end - overlap  # Overlap preserves context
+    
+    return chunks
+```
+
+## System Architecture
+
+CogniFlow follows a **Microservice Architecture**:
+
+```
+┌──────────────────────────────────────────────┐
+│              Watchdog Watcher                  │
+│  (Monitors ./documents for new PDFs)          │
+└──────────────────┬───────────────────────────┘
+                   │ File system event
+┌──────────────────▼───────────────────────────┐
+│              Document Ingestor                 │
+│  1. Extract text (PyMuPDF)                    │
+│  2. Chunk with overlapping windows            │
+│  3. Generate embeddings                       │
+└──────────────────┬───────────────────────────┘
+                   │ Store vectors
+┌──────────────────▼───────────────────────────┐
+│              ChromaDB Vector Store             │
+│  (Persistent, local, semantic search)         │
+└──────────────────┬───────────────────────────┘
+                   │ Query results
+┌──────────────────▼───────────────────────────┐
+│              FastAPI Orchestrator              │
+│  ┌────────────┐  ┌──────────┐  ┌──────────┐ │
+│  │ /chat      │  │ /search  │  │ /upload  │ │
+│  │ (WebSocket)│  │ (REST)   │  │ (REST)   │ │
+│  └────────────┘  └──────────┘  └──────────┘ │
+└──────────────────┬───────────────────────────┘
+                   │
+┌──────────────────▼───────────────────────────┐
+│              Groq / NVIDIA API                 │
+│  (LLaMA 3.3 / Kimi k2.5 for response gen)    │
+└──────────────────────────────────────────────┘
+```
+
+- **The Ingestor** — Breaks unstructured PDFs into smart, overlapping text chunks
+- **The Vault** — Generates high-dimensional vectors and stores them in ChromaDB
+- **The Watcher** — Autonomous thread that syncs filesystem with the database
+- **The Brain** — Orchestration layer bridging user questions with retrieved context and the LLM
+- **The Interface** — Responsive Next.js dashboard with live-sync sidebars and citation-ready chat bubbles
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Backend** | Python 3.12, FastAPI |
+| **AI/LLM** | Groq API / NVIDIA NIM |
+| **Vector Database** | ChromaDB |
+| **Document Processing** | PyMuPDF (fitz) |
+| **Frontend** | Next.js 14, React, TypeScript, Tailwind CSS |
+| **Real-time** | WebSockets |
+| **File Watching** | Watchdog |
+
+## Installation
+
+```bash
+# Backend
+cd backend
+echo "GROQ_API_KEY=your_key_here" > .env
+echo "GROQ_BASE_URL=https://api.groq.com/openai/v1" >> .env
+uv run uvicorn main:app --reload
+
+# Frontend (separate terminal)
+cd frontend
+npm install
+npm run dev
+```
+
+Drop PDFs into the `./documents` folder and start chatting with your knowledge base.
+
+## Roadmap
+
+- Multi-user session management
+- OCR support for scanned documents
+- Cloud deployment via Docker & AWS
+
+## What I Learned
+
+1. **ChromaDB is production-ready for local RAG** — It's fast, persistent, and the embedding pipeline is straightforward. Perfect for single-user or small-team document search.
+
+2. **Overlapping chunks are non-negotiable** — Without overlap, sentences split across chunk boundaries lose context. A 50-token overlap eliminated most context-loss issues.
+
+3. **Watchdog makes auto-ingestion trivial** — The filesystem event pattern is elegant. No polling, no cron jobs — just drop a file and it works.
+
+4. **Streaming responses matter more for RAG than chat** — When answers include citations and source references, seeing them appear incrementally helps users trust the output.
+
+5. **Document processing is the bottleneck** — The RAG pipeline is only as good as its ingestion. Investing in chunking strategy and embedding quality paid off more than optimizing the LLM call.

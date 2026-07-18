@@ -1,0 +1,157 @@
+## The Project
+
+[AutoAnalyst Engine](https://github.com/MUIZ-UDDIN/AutoAnalyst-Engine) is an autonomous AI research agent that takes a topic, searches the web, synthesizes findings, and generates professional Markdown reports — all streamed live to a dashboard via WebSockets.
+
+Instead of manually Googling, reading 20 tabs, and writing up findings, you give AutoAnalyst a topic and watch it work in real-time. It thinks, searches, observes, and writes — showing every step as it happens.
+
+## System Architecture
+
+```
+┌─────────────────────────────────────────────────┐
+│                  Frontend (Next.js)              │
+│  ┌──────────┐  ┌──────────────┐  ┌───────────┐ │
+│  │ Artifacts │  │ Thought      │  │ Report    │ │
+│  │ Sidebar   │  │ Stream (logs)│  │ Viewer    │ │
+│  └──────────┘  └──────────────┘  └───────────┘ │
+│                    │ WebSocket                    │
+└────────────────────┼─────────────────────────────┘
+                     │ ws://localhost:8000/ws/research
+┌────────────────────┼─────────────────────────────┐
+│            Backend (FastAPI)                      │
+│  ┌──────────────┐  ┌────────────┐  ┌──────────┐ │
+│  │ main.py      │→ │engine.py   │→ │tools.py  │ │
+│  │ (WebSocket)  │  │(Research   │  │(Tavily   │ │
+│  │ + REST API)  │  │Engine)     │  │search +  │ │
+│  │              │  │            │  │save file)│ │
+│  └──────────────┘  └────────────┘  └──────────┘ │
+│                           │                      │
+│                    ┌──────┴──────┐               │
+│                    │  Groq API   │               │
+│                    │  (LLaMA 3.1)│               │
+│                    └─────────────┘               │
+└──────────────────────────────────────────────────┘
+```
+
+## How It Works
+
+### The Research Loop
+
+AutoAnalyst uses an iterative **Plan-Act-Observe** loop:
+
+1. **Plan** — The LLM receives a topic and creates a research plan with search queries
+2. **Act** — The agent calls Tavily Search API for each query, fetching real web results
+3. **Observe** — Results are fed back to the LLM, which extracts key findings
+4. **Repeat** — Based on findings, the agent generates deeper queries (3-5 per cycle)
+5. **Synthesize** — After enough iterations, the agent writes a structured report
+
+```python
+# Simplified research loop
+class ResearchEngine:
+    async def run(self, topic: str, websocket: WebSocket):
+        await self.stream_log(websocket, f"Starting research on: {topic}")
+        
+        queries = self.generate_initial_queries(topic)
+        findings = []
+        
+        for query in queries:
+            await self.stream_log(websocket, f"Searching: {query}")
+            results = await self.tavily_search(query)
+            await self.stream_log(websocket, f"Found {len(results)} results")
+            
+            analysis = await self.analyze_with_llm(results, topic)
+            findings.extend(analysis)
+            
+            # Generate follow-up queries based on findings
+            if len(findings) < 10:
+                follow_ups = await self.generate_followup_queries(findings)
+                queries.extend(follow_ups)
+        
+        report = await self.generate_report(topic, findings)
+        await self.save_report(topic, report)
+        await self.stream_artifact(websocket, topic, report)
+```
+
+### Real-Time Thought Stream
+
+Every step is pushed to the frontend via WebSocket. Users see the agent's reasoning in real-time:
+
+```
+Starting research on: "Impact of AI on Healthcare"
+→ Searching: "AI diagnostics accuracy 2024 studies"
+→ Found 8 results
+→ Analyzing: Johns Hopkins study shows 95% accuracy in radiology
+→ Searching: "AI drug discovery breakthrough 2024"
+→ Found 12 results
+→ Analyzing: DeepMind's AlphaFold predicted 200M+ protein structures
+→ Generating report...
+```
+
+### Professional Reports
+
+The final output is a structured Markdown report with:
+
+- **Executive Summary** — One-paragraph overview
+- **Key Findings** — Bullet points with citations
+- **Detailed Analysis** — Section-by-section breakdown
+- **Sources** — Links to all referenced articles
+- **Methodology** — How the research was conducted
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | Next.js 16, React 19, TypeScript, Tailwind CSS v4 |
+| **Backend** | Python 3.14, FastAPI, Uvicorn |
+| **AI Model** | LLaMA 3.1 8B (via Groq API) |
+| **Web Search** | Tavily Search API |
+| **Communication** | WebSocket (real-time), REST API |
+
+## Features
+
+- **Autonomous Research** — Give it a topic, it searches the web and writes a full report
+- **Live Thought Stream** — Watch the agent's reasoning and search steps in real-time
+- **Professional Reports** — Executive Summary, Findings, Analysis, and Sources
+- **Artifact Management** — Download or delete past reports from the sidebar
+- **Multi-search Strategy** — The agent performs 3-5 searches from different angles
+
+## Setup
+
+```bash
+# Backend
+cd backend
+python -m venv .venv
+.venv\Scripts\activate    # Windows
+pip install -r requirements.txt
+
+# Environment variables (.env)
+groq_api="gsk_your_groq_api_key_here"
+tavily_api="tvly-your_tavily_api_key_here"
+
+# Start backend
+uv run uvicorn main:app --reload
+
+# Frontend (separate terminal)
+cd frontend
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000` and start researching.
+
+## API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| WebSocket | `/ws/research` | Real-time research session |
+| GET | `/api/reports/{filename}` | Download a saved report |
+| DELETE | `/api/artifacts/{filename}` | Delete a saved report |
+
+## What I Learned
+
+1. **WebSocket streaming transforms UX** — Watching the agent think in real-time is far more engaging than waiting for a spinner. Users trust the output more when they see how it was derived.
+
+2. **LLM function calling is perfect for agent loops** — Groq's structured output made the Plan-Act-Observe loop clean and predictable. The LLM outputs tool calls, the backend executes them, and feeds results back.
+
+3. **Multi-search strategies beat single queries** — One search query often misses context. Having the agent generate 3-5 different angles for each topic produced consistently better reports.
+
+4. **Tavily is purpose-built for LLM agents** — Unlike general search APIs, Tavily returns clean, structured results that are easy to feed into an LLM without heavy parsing.

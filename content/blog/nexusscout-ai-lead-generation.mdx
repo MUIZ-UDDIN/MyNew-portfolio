@@ -1,0 +1,170 @@
+## The Project
+
+[NexusScout AI](https://github.com/MUIZ-UDDIN/NexusScout-AI) is an autonomous B2B lead generation engine powered by a three-agent AI pipeline. It scrapes Google Maps for businesses, enriches their data by extracting emails from their websites, and sends personalized outreach emails — all from a single web UI.
+
+The problem it solves: manual lead generation is slow, repetitive, and scales poorly. Sales teams spend hours searching Google Maps, visiting websites one by one, copying emails, and drafting outreach. NexusScout automates the entire pipeline end-to-end.
+
+## Architecture
+
+```
+User (React UI)
+    │
+    ▼
+FastAPI Backend
+    │
+    ├── /api/scout       → Agent 1: Scouter (Playwright + Stealth)
+    ├── /api/leads       → Agent 2: Enricher (Email extraction)
+    ├── /api/leads/contact → Agent 3: Outreach (Groq + Resend)
+    │
+    └── SQLite Database (leads.db)
+```
+
+## Three-Agent Pipeline
+
+| Agent | File | Role |
+|-------|------|------|
+| **Scouter** | `backend/agents/scouter.py` | Launches a stealth Playwright browser, searches Google Maps, extracts business names and websites |
+| **Enricher** | `backend/agents/enricher.py` | Visits each website, scrapes contact emails, categorizes leads |
+| **Outreach** | `backend/services/ai_service.py` + `email_service.py` | Uses Groq Llama 3.3 70B to write personalized opening lines, sends emails via Resend |
+
+### Agent 1: Scouter
+
+The Scouter uses Playwright with stealth plugins to search Google Maps without getting blocked. It takes a query like "Web Design Agencies in London" and extracts:
+
+- Business name
+- Website URL
+- Address
+- Rating
+- Category
+
+```python
+# Simplified scouter logic
+from playwright.sync_api import sync_playwright
+from playwright_stealth import stealth_sync
+
+def scout(query: str) -> list[dict]:
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        stealth_sync(page)
+        
+        page.goto(f"https://www.google.com/maps/search/{query}")
+        page.wait_for_selector('a[href*="/maps/place"]')
+        
+        results = []
+        for el in page.query_selector_all('a[href*="/maps/place"]')[:20]:
+            name = el.get_attribute("aria-label")
+            href = el.get_attribute("href")
+            results.append({"name": name, "maps_url": href})
+        
+        return results
+```
+
+### Agent 2: Enricher
+
+Once the Scouter returns businesses with websites, the Enricher visits each site and scrapes contact information. It handles:
+
+- Email extraction from contact pages, about pages, and footers
+- Social media profile discovery
+- Business categorization based on site content
+
+```python
+async def enrich_lead(website: str) -> dict:
+    emails = await extract_emails(website)
+    social = await find_social_profiles(website)
+    category = await categorize_business(website)
+    
+    return {
+        "emails": emails,
+        "social": social,
+        "category": category,
+        "enriched": True
+    }
+```
+
+### Agent 3: Outreach
+
+The Outreach agent is where the AI magic happens. It uses **Groq's Llama 3.3 70B** to generate personalized email opening lines based on the lead's business type and website content.
+
+```python
+from groq import Groq
+
+def generate_outreach(business_name: str, website: str, category: str) -> str:
+    client = Groq(api_key=settings.GROQ_API_KEY)
+    
+    prompt = f"""Write a short, personalized email opening line 
+    for {business_name} (a {category} business at {website}).
+    Keep it professional but warm. Max 2 sentences."""
+    
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.7,
+    )
+    
+    return response.choices[0].message.content
+```
+
+Then **Resend** delivers the email:
+
+```python
+import resend
+
+resend.Emails.send({
+    "from": "onboarding@resend.dev",
+    "to": lead.email,
+    "subject": f"Quick question for {lead.business_name}",
+    "html": f"<p>{ai_generated_message}</p>"
+})
+```
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | Next.js 16 + Tailwind CSS (dark theme) |
+| **Backend** | FastAPI + SQLAlchemy (async) + SQLite |
+| **Automation** | Playwright + playwright-stealth |
+| **AI** | Groq (Llama 3.3 70B) for email personalization |
+| **Email** | Resend API for delivery |
+
+## UI Features
+
+- **Stats Bar** — Real-time counts (Total / Enriched / Failed)
+- **Search Bar** — Type a query → Scouter scrapes Google Maps
+- **Lead Cards** — Expandable details, email, website, status badges
+- **Contact Button** — Triggers AI personalization + email delivery
+- **Delete** — Remove leads with one click
+
+## Quick Start
+
+```bash
+# Backend
+cd backend
+uv add .
+uv run uvicorn main:app --reload
+
+# Frontend (separate terminal)
+cd frontend
+npm install
+npm run dev
+```
+
+### Required API Keys
+
+```
+GROQ_API_KEY=gsk_your_key_here
+RESEND_API_KEY=re_your_key_here
+```
+
+## What I Learned
+
+1. **Three-agent architecture beats monolithic scrapers** — Separating search, enrichment, and outreach into independent agents means each can fail and retry without blocking the others. If the Enricher can't find an email, the Scouter's results aren't lost.
+
+2. **Playwright stealth is essential** — Google Maps blocks headless browsers aggressively. The `playwright-stealth` library patches detected automation signals and dramatically improves success rates.
+
+3. **AI personalization at scale** — Writing personalized emails for 100+ leads manually is impractical. Groq's Llama 3.3 generates convincing opening lines that reference each business's specific category and website — far better than generic templates.
+
+4. **Async SQLAlchemy makes a difference** — When the Enricher is processing 50+ websites concurrently, async database operations prevent write contention and keep the UI responsive.
+
+5. **Resend is production-ready for transactional email** — Simple API, good deliverability, and generous free tier. Perfect for an MVP lead generation tool.

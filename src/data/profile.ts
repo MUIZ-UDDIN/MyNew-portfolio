@@ -22,7 +22,6 @@ export const profile = {
   ],
   social: {
     github: "https://github.com/MUIZ-UDDIN",
-    linkedin: "https://www.linkedin.com/in/muiz-uddin",
     upwork: "https://www.upwork.com/freelancers/~muizuddin",
     fiverr: "https://www.fiverr.com/sellers/muiz_uddin",
   },

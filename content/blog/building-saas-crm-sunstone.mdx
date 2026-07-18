@@ -1,0 +1,276 @@
+## The Project
+
+[Sunstone CRM](https://www.sunstonecrm.com) is a full-featured enterprise SaaS platform I built for companies to manage their entire sales pipeline, team collaboration, and customer communications — all from one dashboard. Think of it as a custom CRM where every feature was designed around how real sales teams work.
+
+The core idea: a company owner buys a subscription, invites their team, assigns roles, and everyone gets access tailored to their position. From deal tracking to live phone calls via Twilio, everything happens inside the app.
+
+> **AI tools used:** Claude was used throughout development to accelerate building the most complex features — the permission matrix, WebSocket handlers, Twilio integration, and custom field builder. AI-assisted development dramatically reduced time-to-delivery for this enterprise SaaS platform.
+
+## The Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | React + Vite (for fast builds and HMR) |
+| **Styling** | Tailwind CSS |
+| **Backend** | Python, FastAPI |
+| **Database** | PostgreSQL |
+| **Infrastructure** | Hostinger VPS |
+| **Voice/SMS** | Twilio (WebSockets) |
+| **Email** | Gmail API |
+
+## Architecture Overview
+
+The app is split into three main layers:
+
+```
+React + Vite Frontend (Tailwind CSS)
+        ↕ HTTP / WebSocket
+    FastAPI Backend (Python)
+        ↕ SQL
+    PostgreSQL Database
+```
+
+### Why React + Vite?
+
+Vite's instant hot module replacement and optimized build pipeline made development significantly faster than Create React App or traditional Webpack setups. For a complex SaaS with many moving parts, saving seconds on every refresh adds up to hours saved per week.
+
+### FastAPI for Real-Time
+
+FastAPI's WebSocket support was critical for the Twilio voice and messaging features. When a call comes in or a text is sent, the server pushes updates directly to the browser without polling.
+
+## Core Features
+
+### Subscription & Team Management
+
+Company owners sign up for a subscription plan and get a master dashboard. From there they can:
+
+```
+Owner Dashboard
+├── Invite team members via email
+├── Assign roles (Admin, Manager, Sales Rep, Viewer)
+├── Create teams/groups
+├── Remove or suspend members
+└── View team-wide analytics
+```
+
+Each role has granular permissions. A Sales Rep can only see their own deals and contacts. A Manager sees their team's pipeline. An Admin sees everything. The Owner controls it all and can restructure teams at any time.
+
+### Deal Pipeline Management
+
+The core sales workflow:
+
+```
+Pipeline Board
+├── Deal Title & Description
+├── Price / Value
+├── Stage (Lead → Qualified → Proposal → Negotiation → Closed)
+├── Assigned team member
+├── Expected close date
+└── Activity history
+```
+
+Deals can be dragged between stages, and every change is logged for audit. Each deal has a full activity timeline showing who did what and when.
+
+### Analytics Dashboard
+
+The main analytics page is the command center:
+
+| Section | What It Shows |
+|---------|---------------|
+| **Overview** | Total deals, revenue, conversion rates |
+| **Deals** | Pipeline value, won/loss ratios, stage distribution |
+| **Contacts** | Total contacts, new contacts, engagement metrics |
+| **Messages** | SMS volume, response rates |
+| **Calls** | Call duration, missed vs answered, peak hours |
+| **Revenue** | Monthly recurring revenue, profit/loss trends |
+| **Custom Reports** | Date range filtering, exportable charts |
+
+All analytics are real-time. When a deal closes or a call ends, the numbers update immediately.
+
+### Communication Suite
+
+#### Gmail Integration (Contacts)
+
+The app syncs contacts from Gmail using the Gmail API. When a user connects their Gmail account, the app pulls in their contacts and matches them against existing deals and communications. No more manual contact entry.
+
+#### Twilio Integration (Voice & SMS)
+
+This was the most technically complex part. Users can buy phone numbers directly through the app, then use them for:
+
+```python
+# Simplified FastAPI WebSocket handler for Twilio calls
+from fastapi import WebSocket
+from twilio.twiml.voice_response import VoiceResponse
+
+@app.websocket("/ws/call/{call_sid}")
+async def handle_call(ws: WebSocket, call_sid: str):
+    await ws.accept()
+    
+    # Connect to Twilio's media stream
+    twilio_ws = await connect_twilio_media_stream(call_sid)
+    
+    # Bidirectional audio relay
+    async for message in twilio_ws:
+        # Relay audio between browser and phone
+        await ws.send_json(message)
+    
+    # Log call metrics
+    await log_call_completion(call_sid, duration, recording_url)
+```
+
+For live SMS conversations, the app uses Twilio's messaging webhooks. When a text arrives at the bought number, it appears instantly in the app's messaging interface — no refresh needed, thanks to WebSockets.
+
+### Profile Management
+
+Every user has a customizable profile with:
+- Name, email, avatar
+- Role and team assignment
+- Notification preferences
+- Twilio phone numbers assigned to them
+- Gmail connection status
+- Activity log
+
+### Sales Categories
+
+| Category | Features |
+|----------|----------|
+| **Deals** | Create, edit, stage management, activity tracking |
+| **Pipelines** | Custom pipeline stages, drag-and-drop board |
+| **Quotes** | Generate and send quotes to contacts |
+| **Analytics** | Sales metrics, forecasting, reporting |
+
+### Communication Section
+
+| Feature | Implementation |
+|---------|----------------|
+| **Contacts** | Synced from Gmail, manually added, or imported |
+| **Email** | Send/receive via Gmail API within the app |
+| **SMS** | Twilio-powered, real-time WebSocket updates |
+| **Calls** | Click-to-call, inbound call routing, call logs |
+
+### Additional Modules
+
+The "More" section packs everything else:
+
+- **Activities** — Logged calls, emails, meetings, and notes tied to deals
+- **Files** — Upload and attach documents to deals and contacts
+- **Workflows** — Automated actions (e.g., "when deal moves to Closed Won, send thank-you email")
+- **Templates** — Reusable email and SMS templates
+- **Data Import/Export** — CSV import for contacts and deals, export for reporting
+- **Custom Fields** — Admin can add custom fields to deals, contacts, or pipelines without code
+
+### Admin Dashboard
+
+The admin panel gives the owner (and admins) full control:
+
+```
+Admin Dashboard
+├── Manage all users (add, suspend, remove)
+├── View all teams and their members
+├── Subscription management
+├── Custom field builder
+├── System-wide analytics
+├── API usage and logs
+├── Backup and restore
+└── Audit trail (who did what, when)
+```
+
+The custom field builder is worth highlighting. An admin can add a new text field, dropdown, or date picker to the deal form — and it appears instantly for all users. No deployment needed. This made the app flexible enough for different industries without custom coding.
+
+## Deployment
+
+The entire stack runs on a **Hostinger VPS**. The setup:
+
+- **Frontend**: Nginx serves the built React app
+- **Backend**: FastAPI behind Gunicorn + Uvicorn
+- **Database**: PostgreSQL with daily automated backups
+- **WebSockets**: FastAPI's built-in WebSocket support, proxied through Nginx
+- **SSL**: Let's Encrypt for HTTPS
+- **CI/CD**: Manual deploy via SSH + Git pulls (with plans to automate)
+
+```bash
+# Deploy flow
+ssh user@vps
+cd /var/www/sunstone
+git pull origin main
+# Build frontend
+cd frontend && npm run build
+# Restart backend
+sudo systemctl restart sunstone-api
+```
+
+## Challenges & Solutions
+
+### WebSocket Scaling
+
+Twilio's media streams over WebSocket meant maintaining persistent connections. Initially we hit issues with Nginx's default proxy settings dropping idle WebSocket connections. The fix:
+
+```nginx
+location /ws/ {
+    proxy_pass http://localhost:8000;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_read_timeout 86400s;
+}
+```
+
+### Real-Time Analytics
+
+Computing analytics on every page load was too slow. We moved to a pre-computed summary table that updates on write operations:
+
+```sql
+CREATE MATERIALIZED VIEW analytics_summary AS
+SELECT
+    owner_id,
+    COUNT(DISTINCT deals.id) AS total_deals,
+    SUM(CASE WHEN deals.stage = 'closed_won' THEN deals.value ELSE 0 END) AS revenue,
+    COUNT(DISTINCT contacts.id) AS total_contacts,
+    COUNT(DISTINCT calls.id) AS total_calls,
+    COUNT(DISTINCT messages.id) AS total_messages
+FROM users
+LEFT JOIN deals ON deals.owner_id = users.id
+LEFT JOIN contacts ON contacts.owner_id = users.id
+LEFT JOIN calls ON calls.owner_id = users.id
+LEFT JOIN messages ON messages.owner_id = users.id
+GROUP BY owner_id;
+```
+
+This made the analytics dashboard load in milliseconds instead of seconds.
+
+### Role-Based Access Control
+
+With multiple roles and granular permissions, a simple role check wasn't enough. We built a permission matrix:
+
+```python
+PERMISSIONS = {
+    "owner": ["*"],
+    "admin": ["read:*", "write:deals", "write:contacts", "manage:team"],
+    "manager": ["read:*", "write:deals", "read:team_deals"],
+    "sales_rep": ["read:self", "write:self_deals", "write:self_contacts"],
+    "viewer": ["read:self"],
+}
+
+def check_permission(user_role: str, action: str, resource: str) -> bool:
+    if user_role == "owner":
+        return True
+    user_perms = PERMISSIONS.get(user_role, [])
+    for perm in user_perms:
+        if perm == f"{action}:{resource}":
+            return True
+        if perm.endswith(":*") and perm.split(":")[0] == action:
+            return True
+    return False
+```
+
+## What I Learned
+
+1. **Real-time over polling** — WebSockets for calls and messages made the app feel instant. Polling would have added latency and server load.
+
+2. **Materialized views for analytics** — Pre-computing aggregations reduced dashboard load times from seconds to milliseconds.
+
+3. **Custom fields without code changes** — A metadata-driven schema (JSONB column for custom fields) made the app adaptable to different industries without redeploying.
+
+4. **Twilio's media streams are powerful but complex** — Getting bidirectional audio working reliably required careful WebSocket lifecycle management.
+
+5. **Nginx WebSocket proxy tuning is essential** — The default timeouts are designed for HTTP, not persistent WebSocket connections.

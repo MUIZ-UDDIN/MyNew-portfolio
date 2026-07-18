@@ -1,0 +1,142 @@
+## The Project
+
+[EchoSentinel](https://github.com/MUIZ-UDDIN/EchoSentinel) is an autonomous, end-to-end market sentiment analysis platform. It harvests global news in real-time, analyzes emotional context using NLP, and surfaces market trends through a live dashboard — all running in a fully containerized environment.
+
+The problem it solves: financial and market data is noisy, scattered, and slow to react. By the time a human reads the news and forms an opinion, the market has already moved. EchoSentinel automates that pipeline end-to-end.
+
+## Key Features
+
+### Autonomous Ingestion
+
+A dedicated background worker (`watcher.py`) monitors high-value keywords 24/7 — Bitcoin, AI, Tesla, inflation, interest rates, and more. It polls NewsAPI on a schedule, fetches fresh headlines, and pushes them into the pipeline without human intervention.
+
+```python
+# Simplified watcher loop
+import time
+from harvester import fetch_news, analyze_sentiment
+
+KEYWORDS = ["Bitcoin", "AI", "Tesla", "Inflation", "Fed"]
+
+while True:
+    for keyword in KEYWORDS:
+        articles = fetch_news(keyword, hours_back=1)
+        for article in articles:
+            score = analyze_sentiment(article["title"])
+            store_in_db(article, score)
+    time.sleep(3600)  # Run every hour
+```
+
+### AI Sentiment Engine
+
+Powered by the **VADER** (Valence Aware Dictionary and sEntiment Reasoner) NLP model, each headline is classified into Positive, Negative, or Neutral with a compound sentiment score. VADER is specifically tuned for social media and news text, making it ideal for headline analysis.
+
+The engine doesn't just classify — it quantifies. Each headline gets a score from -1 (extremely negative) to +1 (extremely positive), and the dashboard aggregates these scores over time to show sentiment trends.
+
+### Persistent Data Vault
+
+Using **SQLAlchemy ORM** with SQLite, every article, score, and timestamp is stored permanently. This enables historical trend analysis — you can look back at sentiment patterns before major market events and correlate them.
+
+```python
+from sqlalchemy import create_engine, Column, String, Float, DateTime
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
+
+class Article(Base):
+    __tablename__ = "articles"
+    
+    id = Column(String, primary_key=True)
+    title = Column(String)
+    source = Column(String)
+    keyword = Column(String)
+    sentiment_score = Column(Float)
+    sentiment_label = Column(String)  # Positive / Negative / Neutral
+    published_at = Column(DateTime)
+    url = Column(String)
+```
+
+### Real-Time Dashboard
+
+A modern, responsive interface built with vanilla JavaScript (ES6+), CSS3 Flexbox/Grid, and HTML5. The dashboard calculates market "Bullish/Bearish" scores on the fly by aggregating recent sentiment data.
+
+### Cloud-Ready Architecture
+
+Fully containerized with **Docker and Docker Compose**. One command spins up the entire stack:
+
+```bash
+docker-compose up --build
+```
+
+This makes deployment to any VPS or cloud environment trivial — no dependency hell, no manual setup.
+
+## System Architecture
+
+EchoSentinel follows a **Distributed Worker Pattern**:
+
+```
+┌─────────────────────────────────────────────┐
+│              Docker Container                │
+│                                              │
+│  ┌──────────┐   ┌───────────────────────┐   │
+│  │ Watcher  │──→│  FastAPI + SQLAlchemy │   │
+│  │ (Worker) │   │  (Web Server + DB)    │   │
+│  └──────────┘   └──────────┬────────────┘   │
+│                            │                 │
+│                   ┌────────▼────────┐        │
+│                   │  SQLite DB      │        │
+│                   └─────────────────┘        │
+│                            │                 │
+│                   ┌────────▼────────┐        │
+│                   │  Static UI      │        │
+│                   │  (JS Dashboard) │        │
+│                   └─────────────────┘        │
+└──────────────────────────────────────────────┘
+```
+
+- **The Engine (Harvester)** — Core logic that communicates with NewsAPI and performs VADER NLP analysis
+- **The Scout (Watcher)** — Autonomous background process that populates the database while idle
+- **The Waiter (FastAPI)** — High-performance web server bridging database and user
+- **The Face (UI)** — Dynamic frontend calculating Bullish/Bearish scores on the fly
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Backend** | Python 3.12, FastAPI |
+| **Database** | SQLite, SQLAlchemy ORM |
+| **AI/NLP** | VADER Sentiment Analysis |
+| **Frontend** | Vanilla JavaScript (ES6+), CSS3, HTML5 |
+| **DevOps** | Docker, Docker Compose |
+| **Package Manager** | uv |
+| **Testing** | Pytest |
+
+## Installation & Setup
+
+```bash
+git clone https://github.com/MUIZ-UDDIN/EchoSentinel.git
+cd EchoSentinel
+
+# Add your NewsAPI key to .env
+echo "API_KEY=your_news_api_key_here" > .env
+
+# Launch
+docker-compose up --build
+```
+
+Open `http://localhost:8000/index.html` and the dashboard is live.
+
+## Testing
+
+```bash
+uv run pytest
+```
+
+## What I Learned
+
+1. **VADER punches above its weight** — For headline-level sentiment, VADER's lexicon-based approach is surprisingly accurate and orders of magnitude faster than transformer models.
+
+2. **Worker patterns keep the UI fast** — By separating ingestion (watcher) from serving (FastAPI), the dashboard never blocks on data collection.
+
+3. **Docker Compose is perfect for side projects** — One-file deployment makes the project instantly portable anywhere.
+
+4. **SQLAlchemy adds unnecessary complexity for SQLite** — For a single-user app, raw SQL or a lighter ORM would have been simpler. But SQLAlchemy made it easy to migrate to PostgreSQL later if needed.

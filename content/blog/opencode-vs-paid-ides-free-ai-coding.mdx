@@ -1,0 +1,102 @@
+## The Problem
+
+The best AI coding assistants are expensive. Cursor Ultra costs $40/month. Claude Code's Pro plan is $20–$200/month. GitHub Copilot runs $10–$39/user/month. Windsurf Pro is $15/month. For a solo developer or small team, that adds up fast — $180 to $480+ per year just for AI help.
+
+I used to pay for Claude Sonnet 4.6 and Opus 4.6 because the results were undeniable. Better code reviews, faster debugging, cleaner architecture. But I kept wondering: *why am I paying thousands of dollars a year when free, open-source models are catching up fast?*
+
+## The Discovery
+
+I switched to **OpenCode** (as a VS Code extension) with **DeepSeek V4 Flash Free** and it costs me **exactly $0**. No subscriptions. No API bills. No hidden tiers. The same IDE I already use, with a free extension and a free model — and it competes with tools I was paying $150+/month for.
+
+Here's the full comparison.
+
+## Pricing Breakdown
+
+| Tool | Monthly Cost | Models Available | Open Source |
+|------|-------------|-----------------|-------------|
+| **OpenCode (IDE ext) + DeepSeek V4 Flash Free** | **$0** | Any model from 75+ providers | ✅ MIT |
+| **OpenCode (IDE ext) + GPT-4o** | $0 + API usage | Same | ✅ MIT |
+| **OpenCode Go** | $5–$10 | 10 curated models | ✅ MIT |
+| **Cursor Pro** | $20/mo | Limited (Opus, GPT, Gemini) | ❌ |
+| **Cursor Ultra** | $40/mo | Same + unlimited fast | ❌ |
+| **Claude Code Pro** | $20/mo | Claude only | ❌ |
+| **Claude Code Max** | $200/mo | Claude only | ❌ |
+| **GitHub Copilot** | $10–$39/user/mo | GPT + Copilot models | ❌ |
+| **Windsurf Pro** | $15/mo | Codeium + Claude | ❌ |
+
+**Annual savings with OpenCode + DeepSeek V4 Flash Free: $480+ compared to Cursor Ultra. $2,400+ compared to Claude Code Max.**
+
+## Model Performance Comparison
+
+Benchmarks from April 2026 (SWE-bench Verified):
+
+| Model | Pass@1 | Cost / task | Daily cost (moderate use) |
+|-------|--------|------------|--------------------------|
+| **DeepSeek V4 Flash Free** | **~73%** | **$0** | **$0** |
+| Sonnet 4.6 | 78% | $0.18 | $9.00 |
+| Opus 4.6 | 84% | $0.42 | $21.00 |
+| GPT-5.5 | 79% | $0.36 | $18.00 |
+
+DeepSeek V4 Flash Free delivers ~90% of Sonnet 4.6's benchmark performance at **100% less cost**. For daily coding — debugging, refactoring, writing tests, adding features — the difference from premium models is barely noticeable. On the hardest tasks Opus 4.6 still leads, but that edge costs **hundreds per month**.
+
+## Why OpenCode Specifically?
+
+I've tried them all — Cursor, Windsurf, Claude Code, GitHub Copilot. Here's why OpenCode is different:
+
+### 1. Works Inside My Existing IDE
+
+I don't need to switch to a forked editor or learn a new tool. OpenCode installs as an extension in VS Code, Cursor, Windsurf, or VSCodium. Same keybindings, same themes, same workflow — just with an AI agent in the panel. The terminal version exists, but the IDE extension is what I use daily.
+
+### 2. DeepSeek V4 Flash Free Costs Zero
+
+DeepSeek offers V4 Flash Free through their API and OpenRouter — no credit card needed, no usage limits, completely free. It handles 90% of my tasks: debugging, code generation, refactoring, explaining complex logic, writing tests. I only reach for premium models on the rare hardest task.
+
+### 3. Model Agnostic
+
+OpenCode works with **any model from any provider**. Claude, GPT, Gemini, DeepSeek, Grok, Kimi, local models via Ollama — you name it. I can use DeepSeek V4 Flash Free for daily work and switch to a premium model mid-session when I need extra reasoning power. No tool switching, no context loss.
+
+### 4. MCP Ecosystem
+
+The **Model Context Protocol** (MCP) support is where OpenCode pulls ahead. MCP servers connect OpenCode to external tools — databases, file systems, APIs, browser automations — giving it capabilities that no other AI coding tool offers out of the box.
+
+Need OpenCode to query your production database? MCP. Need it to manage a Kubernetes cluster? MCP. Need it to interact with GitHub Actions, Jira, or Slack? There's an MCP server for that.
+
+Cursor, Windsurf, and Claude Code don't have this. OpenCode's MCP ecosystem makes it an **agent platform**, not just a chatbot with code editing.
+
+### 5. Privacy
+
+OpenCode processes everything locally. Your code never leaves your machine unless you're sending it to an LLM provider. For enterprise or privacy-sensitive work, you can run local models entirely offline via Ollama. Cursor, Windsurf, and Claude Code all route your code through their servers.
+
+### 6. No Feature Walls
+
+Paid IDEs meter their best features: "50 slow agent requests per month," "500 Cascade credits," "unlimited only on Ultra." OpenCode has no such limits. Use every feature, every model, every tool — including MCP servers — without hitting a paywall.
+
+## What You Lose
+
+Honest comparison — OpenCode isn't perfect:
+
+- **No inline autocomplete** — Cursor's tab-to-accept completions are fantastic. OpenCode doesn't have this.
+- **Setup takes 2 minutes** — You need to install the extension and configure a model provider. Paid IDEs work out of the box.
+- **Codebase indexing** — Windsurf's Riptide indexing handles 1M+ file codebases. OpenCode's context is session-scoped.
+
+But for *most* daily development, these trade-offs are minor compared to saving **$480–$2,400/year**.
+
+## The Verdict
+
+| I use OpenCode because… | Paid IDEs are better if… |
+|------------------------|-------------------------|
+| It costs **$0** | You need inline autocomplete |
+| I keep my existing IDE with an extension | You want a zero-setup out-of-box experience |
+| MCP servers connect to anything | You manage a 1M+ file monorepo |
+| Free DeepSeek V4 Flash handles 90%+ of tasks | You don't want to configure providers |
+| I can switch to Claude/GPT mid-session | |
+
+**Try it yourself** — it costs nothing:
+
+```bash
+# Install OpenCode extension in VS Code
+# Or install via CLI:
+npm install -g opencode-ai
+```
+
+Add your DeepSeek API key (or skip it and use DeepSeek V4 Flash Free via OpenRouter), and you're coding with a top-tier AI agent for **$0/month** instead of $20–$200/month.
