@@ -114,7 +114,7 @@ export default async function BlogPostPage({ params }: Props) {
       url: "https://muizuddin.com",
     },
     url: `https://muizuddin.com/blog/${slug}`,
-    image: "https://muizuddin.com/Img.webp",
+    image: "https://muizuddin.com/og-default.webp",
   }
 
   return (

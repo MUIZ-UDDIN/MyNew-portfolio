@@ -74,7 +74,7 @@ export const metadata: Metadata = {
     url: "https://muizuddin.com",
     images: [
       {
-        url: "https://muizuddin.com/Img.webp",
+        url: "https://muizuddin.com/og-default.webp",
         alt: "Muiz Ud Din | Data Scientist & Full-Stack AI Engineer",
       },
     ],
@@ -84,7 +84,7 @@ export const metadata: Metadata = {
     title: "Muiz Ud Din | Data Scientist & Full-Stack AI Engineer",
     description:
       "Top Rated Data Scientist and Full-Stack AI Engineer with 4+ years of experience. Specializing in Python automation, LLM Agents, RAG, web scraping, and Generative AI.",
-    images: ["https://muizuddin.com/Img.webp"],
+    images: ["https://muizuddin.com/og-default.webp"],
     creator: "@muizuddin",
   },
   robots: {
