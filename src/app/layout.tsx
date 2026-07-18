@@ -75,8 +75,6 @@ export const metadata: Metadata = {
     images: [
       {
         url: "https://muizuddin.com/Img.webp",
-        width: 800,
-        height: 800,
         alt: "Muiz Ud Din | Data Scientist & Full-Stack AI Engineer",
       },
     ],
