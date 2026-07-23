@@ -50,6 +50,8 @@ const mdxModules: Record<string, () => Promise<{ default: React.ComponentType }>
   "building-ai-faq-chatbot-groq": () => import("@/../content/blog/building-ai-faq-chatbot-groq.mdx"),
   "nexusscout-ai-lead-generation": () => import("@/../content/blog/nexusscout-ai-lead-generation.mdx"),
   "opencode-vs-paid-ides-free-ai-coding": () => import("@/../content/blog/opencode-vs-paid-ides-free-ai-coding.mdx"),
+  "trigger-based-sales-intelligence-engine": () => import("@/../content/blog/trigger-based-sales-intelligence-engine.mdx"),
+  "self-host-n8n-free-docker-cloudflare-tunnel": () => import("@/../content/blog/self-host-n8n-free-docker-cloudflare-tunnel.mdx"),
 }
 
 function RelatedPosts({ currentSlug, currentTags }: { currentSlug: string; currentTags: string[] }) {
