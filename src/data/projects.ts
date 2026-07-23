@@ -87,4 +87,12 @@ export const projects: Project[] = [
     github: "https://github.com/MUIZ-UDDIN/Win_Predictor",
     category: "Data Science",
   },
+  {
+    title: "Trigger-Based Sales Intelligence Engine",
+    description: "Decentralized autonomous sales pipeline that monitors global news for funding rounds, leadership changes, and M&A — scores leads with Groq LLM, scouts websites with Playwright, and sends personalized emails via a Slack human-in-the-loop approval gate.",
+    tech: ["n8n", "Groq", "Playwright", "FastAPI", "Python", "Slack", "Resend", "SQLite", "Docker"],
+    github: "https://github.com/MUIZ-UDDIN/Trigger-based-sales-intelligence",
+    category: "Automation",
+    highlights: ["Human-in-the-loop", "Event-driven", "AI lead scoring"],
+  },
 ]

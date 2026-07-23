@@ -235,6 +235,54 @@ export const posts: PostMeta[] = [
       },
     ],
   },
+  {
+    slug: "trigger-based-sales-intelligence-engine",
+    title: "How to Build a Trigger-Based Sales Intelligence Engine with n8n, Groq, Playwright & Human-in-the-Loop",
+    date: "2026-07-23",
+    excerpt:
+      "Step-by-step guide to building a decentralized autonomous sales pipeline that monitors global news for funding rounds, leadership changes, and M&A — then scores leads with Groq LLM, scouts websites with Playwright, and sends personalized emails via a Slack human-in-the-loop approval gate.",
+    tags: ["n8n", "Groq", "Playwright", "FastAPI", "Python", "Slack", "Resend", "AI Agent", "Automation", "Lead Generation", "LLM", "SQLite", "Docker", "Cloudflare"],
+    readTime: "10 min read",
+    category: "Personal",
+    faq: [
+      {
+        q: "What is a Trigger-Based Sales Intelligence Engine?",
+        a: "A decentralized system that monitors global news events (funding rounds, leadership changes, M&A) in real-time, scores them by sales potential, enriches lead data via web reconnaissance, and sends personalized outreach through a human-in-the-loop approval workflow — all in under 10 minutes per event.",
+      },
+      {
+        q: "How does the human-in-the-loop approval work?",
+        a: "The system pauses at the email dispatch stage and sends a rich notification to Slack containing the lead intelligence, AI-generated copy, and a click-to-approve button. The email is only sent when a human physically clicks approve, preventing any accidental or inappropriate outreach.",
+      },
+      {
+        q: "What makes this different from traditional lead generation?",
+        a: "Traditional tools batch-process leads on schedules. TBSIE is event-driven — it reacts to real-world business triggers as they happen. It also uses AI for both lead scoring and personalized copywriting, with a focus on timing and context rather than volume.",
+      },
+    ],
+  },
+  {
+    slug: "self-host-n8n-free-docker-cloudflare-tunnel",
+    title: "How to Self-Host n8n for Free Without the 14-Day Trial (Docker + Cloudflare Tunnel Guide)",
+    date: "2026-07-23",
+    excerpt:
+      "Step-by-step guide to running n8n locally on Docker and exposing it online with Cloudflare Tunnel — unlimited workflows, public webhooks, full data privacy, and zero subscription costs. One instance powers all your automation.",
+    tags: ["n8n", "Docker", "Cloudflare", "Automation", "Self-Hosted", "DevOps", "Webhook", "Python", "Open Source"],
+    readTime: "8 min read",
+    category: "General",
+    faq: [
+      {
+        q: "How do I run n8n for free without the 14-day trial?",
+        a: "Run n8n locally with Docker and expose it via Cloudflare Tunnel. The n8n software itself is free and open source — only their cloud hosting costs money. Self-hosting gives you the same features with no trial expiry and no usage limits.",
+      },
+      {
+        q: "What are the limitations of Cloudflare's free tunnel for n8n?",
+        a: "The free plan caps payloads at 50MB per request and doesn't support WebSocket proxying. For automation workflows using HTTP webhooks (Slack, Resend, GitHub, Stripe, RSS), this is sufficient. Paid plans ($20/month) remove both limits.",
+      },
+      {
+        q: "Can I run multiple n8n workflows on the same instance?",
+        a: "Yes. One Docker container handles unlimited workflows simultaneously. I run over 15 workflows including a sales intelligence engine, RSS monitors, Slack bots, and invoice handlers — all on one self-hosted instance with no performance issues.",
+      },
+    ],
+  },
 ]
 
 export function getAllTags(): string[] {

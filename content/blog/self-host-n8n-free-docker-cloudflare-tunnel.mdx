@@ -1,0 +1,151 @@
+## The Problem
+
+n8n is the best open-source workflow automation platform on the market. But their cloud offering has a catch: **14-day free trial**, then $20–$50/month depending on your plan. If you want unlimited workflows, public webhooks, and full data privacy without paying monthly, the cloud tier isn't the answer.
+
+The solution is simple: run n8n locally on Docker and expose it to the internet with Cloudflare Tunnel. It's the exact same n8n software — no features removed, no limits, no trial expiry.
+
+I use this setup for every automation I run. Here's exactly how to do it.
+
+## The Architecture
+
+```
+Your Machine (Docker)
+┌──────────────────────────┐
+│  n8n Container           │
+│  Port 5678               │
+│  Localhost only          │
+└──────────────────────────┘
+         │
+         ▼
+Cloudflare Tunnel (free)
+┌──────────────────────────┐
+│  cloudflared             │
+│  Creates secure tunnel   │
+│  to Cloudflare edge      │
+└──────────────────────────┘
+         │
+         ▼
+Public Internet
+┌──────────────────────────┐
+│  https://n8n.yourdomain  │
+│   → Slack webhooks       │
+│   → Resend callbacks     │
+│   → GitHub webhooks      │
+│   → Any HTTP service     │
+└──────────────────────────┘
+```
+
+## Step 1: Run n8n with Docker
+
+```bash
+docker run -d --restart always \
+  --name n8n \
+  -p 5678:5678 \
+  -v n8n_data:/home/node/.n8n \
+  -e N8N_SECURE_COOKIE=false \
+  -e WEBHOOK_URL=https://n8n.yourdomain.com \
+  n8nio/n8n
+```
+
+**What this does:**
+- `-d` — Runs in the background
+- `--restart always` — Auto-restarts on boot or crash
+- `-v n8n_data` — Persistent volume so your workflows survive container restarts
+- `WEBHOOK_URL` — Tells n8n what public URL to use for webhook triggers
+
+With self-hosting, you get **unlimited active workflows** (n8n cloud limits you to 5–20 depending on plan), unlimited executions, and your data never leaves your machine.
+
+## Step 2: Expose with Cloudflare Tunnel (Free)
+
+```bash
+# Install cloudflared
+# Download from https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
+
+# Authenticate
+cloudflared tunnel login
+
+# Create a tunnel
+cloudflared tunnel create n8n
+
+# Point your DNS (e.g., n8n.yourdomain.com)
+cloudflared tunnel route dns n8n n8n.yourdomain.com
+
+# Create config.yml in ~/.cloudflared/
+# tunnel: <tunnel-id>
+# credentials-file: /home/user/.cloudflared/<tunnel-id>.json
+# ingress:
+#   - hostname: n8n.yourdomain.com
+#     service: http://localhost:5678
+#   - service: http_status:404
+
+# Run the tunnel
+cloudflared tunnel run n8n
+```
+
+Or use a systemd service so it runs permanently:
+
+```bash
+# Install as a system service (Linux)
+sudo cloudflared service install
+
+# Or run as a Docker container (recommended)
+docker run -d --restart always \
+  --name cloudflared \
+  cloudflare/cloudflared tunnel --no-autoupdate run <tunnel-id>
+```
+
+**What this gives you:**
+- A public HTTPS URL: `https://n8n.yourdomain.com`
+- Zero-config SSL/TLS (Cloudflare handles certificates)
+- No open ports on your firewall — the tunnel initiates outbound connections only
+- DDoS protection, caching, and analytics for free
+
+## Limitations of the Free Plan
+
+Cloudflare's free tunnel is generous but has limits:
+
+| Feature | Free | Paid |
+|---------|------|------|
+| Payload size | 50MB max | 100MB+ |
+| WebSocket proxy | No | Yes |
+| Concurrent connections | Unlimited | Unlimited |
+| Bandwidth | Unlimited | Unlimited |
+| DNS management | Yes | Yes |
+
+For automation workflows — Slack webhooks, Resend callbacks, RSS polling, GitHub triggers, Stripe events — the free plan is more than enough. The 50MB payload limit covers virtually all HTTP webhook requests. WebSocket is only needed if you build real-time streaming workflows (live chat, live dashboards), which is rare for n8n.
+
+## One Instance Powers Everything
+
+The best part: a single n8n instance runs every workflow you need. I currently have:
+
+- TBSIE (Trigger-Based Sales Intelligence Engine)
+- Portfolio monitoring and RSS aggregation
+- A Slack bot for deployment notifications
+- Stripe invoice handling and customer follow-ups
+- GitHub action triggers and PR notifications
+
+All from one Docker container. All exposed through one Cloudflare tunnel. All free.
+
+## Step 3: Access Your n8n Editor
+
+Once the tunnel is running, visit `https://n8n.yourdomain.com` in your browser. You'll see the full n8n editor with no restrictions:
+
+- 400+ integrations (Slack, GitHub, Notion, Google Sheets, PostgreSQL, and more)
+- Full visual workflow builder
+- Error handling, retry logic, and conditional branching
+- Code nodes (Python, JavaScript) for custom logic
+- Webhook triggers that services can reach via your public URL
+
+## Security Considerations
+
+- Add a username/password to your n8n instance: `-e N8N_BASIC_AUTH_ACTIVE=true -e N8N_BASIC_AUTH_USER=admin -e N8N_BASIC_AUTH_PASSWORD=yourpassword`
+- Cloudflare Access (free for up to 50 users) can add SSO authentication in front of your tunnel
+- Keep your container updated: `docker pull n8nio/n8n && docker restart n8n`
+
+## What I Learned
+
+1. **Self-hosting saves $240–600/year** — n8n cloud at $20–50/month adds up fast. Docker + Cloudflare Tunnel costs nothing and gives you strictly more capability.
+2. **One instance, unlimited workflows** — Cloud plans meter active workflows. Self-hosted has no such limit. I run 15+ workflows on the same container without issues.
+3. **Data privacy is a side benefit** — Every workflow execution stays on your machine. No data leaves your network unless you explicitly send it to an API. For sensitive automation (customer data, internal metrics), this alone justifies self-hosting.
+4. **Cloudflare Tunnel beats port forwarding** — No open firewall ports, no static IP needed, no reverse proxy configuration. The tunnel is inherently more secure than exposing ports.
+5. **Docker makes upgrades trivial** — `docker pull n8nio/n8n && docker restart n8n` takes 10 seconds. No package managers, no dependency conflicts, no environment drift.

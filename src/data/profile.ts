@@ -26,7 +26,7 @@ export const profile = {
     fiverr: "https://www.fiverr.com/sellers/muiz_uddin",
   },
   about: [
-    "I started with Python scripts and never stopped building. Today, I'm the engineer you call when the data is messy, the deadline is tight, and the problem hasn't been solved before. Whether it's scraping a site that fights back at scale, training a model on sparse data, deploying an LLM agent that follows instructions, or wiring up a full-stack app with real-time WebSockets. I figure it out and ship it. HTML to Next.js, REST to WebSockets, local to Docker on a VPS, I handle the whole stack.",
+    "I started with Python scripts and never stopped building. Today, I'm the engineer you call when the data is messy, the deadline is tight, and the problem hasn't been solved before. Whether it's scraping a site that fights back at scale, training a model on sparse data, deploying an LLM agent that follows instructions, wiring up an n8n automation with Make and Zapier integrations, or building a full-stack app with real-time WebSockets. I figure it out and ship it. HTML to Next.js, REST to WebSockets, local to Docker on a VPS, I handle the whole stack.",
     "Beyond the code, I'm a curious soul who speaks three languages, loves a good challenge, and believes the best technology is invisible, it just makes people's lives easier. If it involves Python, web scraping, automation, AI, or deployment, I'm probably already building it."
   ]
 }
@@ -37,7 +37,7 @@ export const skills = {
   "Full-Stack": ["React", "Next.js", "Node.js", "FastAPI", "Flask", "SQL", "Supabase"],
   "Data Analytics": ["Power BI", "Tableau", "Pandas", "NumPy", "SQL"],
   "Vibe Coding": ["Cursor", "Claude", "ChatGPT", "Prompt Engineering", "AI-Assisted Dev"],
-  "Automation": ["Playwright", "Selenium", "n8n", "Make", "Python"],
+  "Automation": ["n8n", "Make", "Zapier", "Playwright", "Selenium", "Python"],
   "DevOps": ["Docker", "VPS Deployment", "Git", "Linux/Ubuntu"]
 }
 

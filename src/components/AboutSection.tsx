@@ -23,7 +23,7 @@ const highlights = [
   {
     icon: Shield,
     title: "Automation & DevOps",
-    description: "Robust automation with Python, n8n, Docker, and VPS deployment for production systems.",
+    description: "End-to-end workflow automation with n8n, Make, and Zapier. Plus Docker, VPS deployment, and CI/CD for production systems.",
   },
 ]
 
@@ -68,29 +68,7 @@ export function AboutSection() {
           ))}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, margin: "-50px" }}
-          className="glass rounded-2xl p-8 tilt-card"
-        >
-          <h3 className="text-lg font-semibold text-[var(--color-text)] mb-4">Education</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {profile.education.map((edu, i) => (
-              <div key={`${edu.degree}-${i}`} className="flex flex-col items-center text-center gap-2 p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] hover:border-purple-500/30 hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-300">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-cyan-400 flex items-center justify-center shrink-0">
-                  <span className="text-white text-xs font-bold">{i + 1}</span>
-                </div>
-                <div>
-                  <p className="text-[var(--color-text)] text-sm font-medium">{edu.degree}</p>
-                  <p className="text-[var(--color-text-secondary)] text-xs mt-1">{edu.school}</p>
-                  <p className="text-[var(--color-text-muted)] text-[10px] mt-0.5">{edu.period}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      </div>
+        </div>
     </section>
   )
 }

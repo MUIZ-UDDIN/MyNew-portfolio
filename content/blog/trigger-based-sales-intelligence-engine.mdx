@@ -1,0 +1,126 @@
+## The Project
+
+I built a **Trigger-Based Sales Intelligence Engine (TBSIE)** — a decentralized autonomous pipeline that transforms real-world business events into hyper-personalized sales outreach in under 10 minutes. No human monitors news feeds. No one researches leads manually. No one drafts emails. The system handles everything from event detection to personalized outreach with a single human approval click.
+
+This is not a lead generation tool. This is a **Distributed Intelligent System**.
+
+[View on GitHub](https://github.com/MUIZ-UDDIN/Trigger-based-sales-intelligence)
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│            Workflow 1: The Tactical Event Listener        │
+│                                                          │
+│  RSS Feeds ──► n8n ──► Groq LLM (NER + Scoring)          │
+│                    │                                      │
+│                    ▼                                      │
+│           FastAPI + Playwright Scouter                     │
+│           (Visual Web Recon)                              │
+└─────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│            Workflow 2: The Strategic Closer               │
+│                                                          │
+│  SQLite (Unposted Leads) ──► n8n Polling ──► AI Copy      │
+│                    │                                      │
+│                    ▼                                      │
+│  Slack Block Kit (Human-in-the-Loop Approval)             │
+│                    │                                      │
+│                    ▼                                      │
+│           Resend API (Email Delivery)                     │
+│           SQLite State Sync (Mark Posted)                 │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Workflow 1: The Tactical Event Listener
+
+**The Mission:** Real-time monitoring of global market triggers to identify high-intent prospects before competitors.
+
+**The Stack:** n8n, Groq (Llama 3.3), RSS, Python (FastAPI + Playwright)
+
+**How it works:**
+
+1. **Ingestion** — Scans global news feeds (RSS) for strategic trigger events: funding rounds, leadership changes, M&A announcements, product launches.
+
+2. **Intelligence** — A structured Groq LLM chain performs Named Entity Recognition (NER), extracting target company names and assigning a Lead Score (1–10) based on business potential.
+
+```
+LLM Prompt: "Extract company names from this news headline.
+Score each company 1-10 based on likelihood of needing
+sales outreach services. Return JSON with company_name,
+score, and reason."
+```
+
+3. **Refinery** — A custom Python/Pyodide node flattens the nested AI output into math-ready integers for high-pass filtering. Only leads scoring 7+ proceed.
+
+4. **Action** — Triggers a local Playwright-based "Scouter" agent via API to perform visual web reconnaissance and extract the company's website URL.
+
+```python
+# Scouter Agent (simplified)
+async def scout(company_name: str) -> dict:
+    async with async_playwright() as p:
+        browser = await p.chromium.launch()
+        page = await browser.new_page()
+        await page.goto(f"https://google.com/search?q={company_name}")
+        result = await page.evaluate("""
+            () => document.querySelector('a[href^="http"]')?.href
+        """)
+        return {"company": company_name, "website": result}
+```
+
+### Workflow 2: The Strategic Closer
+
+**The Mission:** Autonomous data enrichment and personalized copywriting with a secure human-in-the-loop approval gate.
+
+**The Stack:** n8n, FastAPI, SQLAlchemy, Slack Block Kit, Resend API
+
+**How it works:**
+
+1. **State Management** — Uses a pull-based polling pattern to retrieve "unposted" leads from a persistent SQLite database.
+
+2. **Synthesis** — An AI copywriter analyzes the original news headline and business description to draft a hyper-contextual 2-sentence pitch referencing the specific trigger event.
+
+```
+Example: "Congrats on the $12M Series A! I have an idea
+for streamlining your lead qualification pipeline using
+AI agents — would you be open to a 10-minute chat?"
+```
+
+3. **Human-in-the-Loop (HITL)** — Dispatches a rich Slack notification containing the lead intelligence and a self-generating resume link. The human reviews and approves with one click.
+
+4. **Safe Execution** — Pauses the entire lifecycle until a human provides a physical "key" (the click). Upon approval, dispatches the email via Resend and performs a state sync (marks as posted) to ensure idempotency — no duplicate emails ever.
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Orchestration** | n8n (workflow automation) |
+| **AI/NER** | Groq (Llama 3.3 70B) |
+| **Web Recon** | Python, FastAPI, Playwright |
+| **Storage** | SQLite, SQLAlchemy |
+| **Notifications** | Slack Block Kit |
+| **Email** | Resend API |
+
+## Screenshots (Add These)
+
+| Screenshot | Description |
+|------------|-------------|
+| `tbsie-n8n-workflow1.png` | n8n workflow showing RSS ingestion → LLM scoring → Scouter API trigger |
+| `tbsie-n8n-workflow2.png` | n8n workflow showing polling → AI copy → Slack HITL → Resend |
+| `tbsie-slack-approval.png` | Slack notification with lead card and "Approve & Send" button |
+| `tbsie-lead-db.png` | SQLite database showing scored leads with posted/unposted states |
+| `tbsie-architecture.png` | Full architecture diagram (Workflow 1 + 2 combined) |
+
+**Recommended dimensions for screenshots:** 1200×675 or 1920×1080 for the n8n workflows, 800×600 for Slack. Place them in `public/blog/tbsie/` and reference as `/blog/tbsie/screenshot-name.png`.
+
+## What I Learned
+
+1. **Event-driven beats batch** — Traditional lead generation runs on schedules (daily/weekly). TBSIE reacts to events in real-time. A funding announcement goes out at 10 AM; by 10:10 AM the personalized email is in their inbox. Timing wins sales.
+
+2. **Human-in-the-loop is non-negotiable for outreach** — Fully autonomous email sending is dangerous. The Slack HITL gate ensures quality control while keeping the pipeline fast. One click is all it takes.
+
+3. **LLM scoring reduces noise by 80%** — Without the NER + scoring pipeline, every news headline would trigger a scout. The LLM filters out irrelevant events and only passes high-intent signals forward.
+
+4. **Pull-based polling + state sync guarantees idempotency** — The combo of polling for "unposted" leads and SQLite state sync ensures that even if n8n restarts or the Slack approval times out, no lead is ever contacted twice.

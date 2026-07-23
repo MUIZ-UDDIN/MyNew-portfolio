@@ -5,8 +5,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const blogEntries: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `https://muizuddin.com/blog/${post.slug}`,
     lastModified: new Date(post.date),
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
   }))
 
   return [
